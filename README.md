@@ -1,6 +1,6 @@
 # Islandora Internet Archive BookReader [![Build Status](https://travis-ci.org/Islandora/islandora_internet_archive_bookreader.png?branch=7.x)](https://travis-ci.org/Islandora/islandora_internet_archive_bookreader)
 
-## IABR v 3.2.1
+## IABR v 3.2.1  ! work in progress !
 
 
 ## Introduction
