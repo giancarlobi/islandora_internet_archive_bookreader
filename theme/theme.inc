@@ -25,17 +25,19 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
   $enableToken = variable_get('islandora_internet_archive_bookreader_use_token', FALSE);
   $tilesourceURL_prefix = variable_get('islandora_internet_archive_bookreader_tile_url_prefix', 'http://127.0.0.1:8080/fedora/objects/');
   $tilesourceURL_suffix = variable_get('islandora_internet_archive_bookreader_tile_url_suffix', '/datastreams/JP2/content');
-	
+
+
   $pages = array();
   foreach ($variables['pages'] as $page_pid => $info) {
-        if (($backup_uris) && ($imageServer == 'djatoka')) {
-                $addendum = array('pid' => $page_pid);
-        }
-        else {
-                $object_token = $enableToken ? '?token='.islandora_get_object_token($page_pid, $dsid, 2) : '';
-                $addendum = array('uri' => $tilesourceURL_prefix.$page_pid.$tilesourceURL_suffix.$object_token);
-        }
-        $pages[] = $info + $addendum;
+
+	if (($backup_uris) && ($imageServer == 'djatoka')) {
+		$addendum = array('pid' => $page_pid);
+	}
+	else {
+		$object_token = $enableToken ? '?token='.islandora_get_object_token($page_pid, $dsid, 2) : '';
+		$addendum = array('uri' => $tilesourceURL_prefix.$page_pid.$tilesourceURL_suffix.$object_token);
+	}
+	$pages[] = $info + $addendum;
   }
 
   global $base_url;
@@ -59,25 +61,24 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
       'mobilize' => variable_get('islandora_internet_archive_bookreader_mobile_full_screen', FALSE),
       'content_type' => variable_get('islandora_internet_archive_bookreader_content_type', 'book'),
       'useBackupUri' => $backup_uris,
-      'iiifUri' => $iiifServerBaseURL,
-      'image_max_width' => $image_max_width,
-      'imageServer' => $imageServer,
+
+	'iiifUri' => $iiifServerBaseURL,
+        'image_max_width' => $image_max_width,
+        'imageServer' => $imageServer,
+
     ),
   );
 
-/**
- *      IABR enhanced for mobile
- */
-  $metamobile = array(
+$metamobile = array(
     '#tag' => 'meta',
     '#attributes' => array(
        'name' => 'viewport',
        'content' => 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
     ),
   );
-  drupal_add_html_head($metamobile, 'metamobile');  
-  
-  
+  drupal_add_html_head($metamobile, 'metamobile');
+
+
   drupal_add_js($data_array, 'setting');
   drupal_add_css("$library_path/BookReader/BookReader.css", array(
     'group' => CSS_SYSTEM,
@@ -88,57 +89,118 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
   drupal_add_library('system', 'ui.slider');
   drupal_add_library('system', 'ui.draggable');
 
- 
-  drupal_add_js("$library_path/BookReader/jquery.colorbox-min.js", array(
-    'group' => JS_LIBRARY,
-    'weight' => -6,
-  ));    
+//§§
+//§§ We need this before IABR plugins as plugins use $ instead of jQuery
+//§§
+  drupal_add_js("$module_path/js/jquery_dollar.js",
+    array(
+      'group' => JS_LIBRARY,
+      'weight' => +5,
+    )
+  );
   
   drupal_add_js("$module_path/js/detectmobilebrowser.js",
     array(
       'group' => JS_LIBRARY,
-      'weight' => -6,
+      'weight' => +6,
     )
   );
+
+  drupal_add_css("$library_path/BookReader/mmenu/dist/css/jquery.mmenu.css", array(
+    'group' => CSS_SYSTEM,
+  ));
+
+  drupal_add_css("$library_path/BookReader/mmenu/dist/addons/navbars/jquery.mmenu.navbars.css", array(
+    'group' => CSS_SYSTEM,
+  ));
+
+//§§  drupal_add_js("$library_path/BookReader/jquery-ui-1.12.0.min.js", array(
+//§§      'group' => JS_LIBRARY,
+//§§      'weight' => +6,
+//§§    ));
+
+  drupal_add_js("$library_path/BookReader/jquery.ui.touch-punch.min.js", array(
+      'group' => JS_LIBRARY,
+      'weight' => +6,
+    ));
+
+
   drupal_add_js("$library_path/BookReader/jquery.browser.min.js", array(
       'group' => JS_LIBRARY,
-      'weight' => -6,
+      'weight' => +6,
     ));
-  
-  drupal_add_js("$library_path/BookReader/jquery.bt.min.js", array(
-    'group' => JS_LIBRARY,
-    'weight' => -6,
-  )); 
-  
+
   drupal_add_js("$library_path/BookReader/dragscrollable-br.js", array(
     'group' => JS_LIBRARY,
-    'weight' => -6,
+    'weight' => +6,
   ));
+
+  drupal_add_js("$library_path/BookReader/jquery.colorbox-min.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));    
+
+
+  drupal_add_js("$library_path/BookReader/jquery.bt.min.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  )); 
+  
   
   drupal_add_js("$library_path/BookReader/mmenu/dist/js/jquery.mmenu.min.js", array(
     'group' => JS_LIBRARY,
-    'weight' => -6,
+    'weight' => +6,
   ));
   
   drupal_add_js("$library_path/BookReader/mmenu/dist/addons/navbars/jquery.mmenu.navbars.min.js", array(
     'group' => JS_LIBRARY,
-    'weight' => -6,
+    'weight' => +6,
   ));
   
   drupal_add_js("$library_path/BookReader/BookReader.js", array(
     'group' => JS_LIBRARY,
-    'weight' => -6,
+    'weight' => +6,
   ));
-  drupal_add_js("$module_path/js/islandora_book_reader.js",
-    array(
-      'group' => JS_LIBRARY,
-      'weight' => -4,
-    )
-  );
+
+  drupal_add_js("$library_path/BookReader/plugins/plugin.url.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));
+
+
+  drupal_add_js("$library_path/BookReader/plugins/plugin.resume.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));
+
+  drupal_add_js("$library_path/BookReader/plugins/plugin.mobile_nav.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));
+
+  drupal_add_js("$library_path/BookReader/plugins/plugin.chapters.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));
+
+  drupal_add_js("$library_path/BookReader/plugins/plugin.search.js", array(
+    'group' => JS_LIBRARY,
+    'weight' => +6,
+  ));
+
+
+//§  drupal_add_js("$module_path/js/islandora_book_reader.js",
+//§    array(
+//§      'group' => JS_LIBRARY,
+//§      'weight' => -4,
+//§    )
+//§  );
+
   drupal_add_js("$module_path/js/islandora_internet_archive_bookreader.js", array(
     'group' => JS_LIBRARY,
-    'weight' => -3,
+    'weight' => +7,
   ));
+
   
   // The Internet Archive Book Reader, hijacks the URL anchor '#' for jumping to
   // particular page # / view modes. Drupal fieldset javascript code
@@ -157,9 +219,12 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
  */
 function theme_islandora_internet_archive_bookreader_book_info(array $variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
-  //--Name of Views or empty for default info tab
-  $infoTab_views = variable_get('islandora_internet_archive_bookreader_info_views', '');
-	
+
+        //--Name of Views or empty for default info tab
+        $infoTab_views = variable_get('islandora_internet_archive_bookreader_info_views', '');
+        //--to test
+	//$infoTab_views = 'bookreader_info_tab';
+
   $object = $variables['object'];
 
   // As IAV presents the metadata within a Colorbox window request for the
@@ -169,7 +234,7 @@ function theme_islandora_internet_archive_bookreader_book_info(array $variables)
 
   //--info_views empty = default
   if ($infoTab_views ==''){
-	
+
   // Let's default back to what IAV had before for a default.
   if ($viewer != 'dublin_core' && $metadata) {
     $content = $metadata;
@@ -198,8 +263,7 @@ function theme_islandora_internet_archive_bookreader_book_info(array $variables)
     $view = views_get_view($infoTab_views);
     $content=$view->preview('default', $args);
   }
-	  
-	  
+
   return $content;
 }
 
