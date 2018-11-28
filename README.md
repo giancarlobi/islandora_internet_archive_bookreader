@@ -4,9 +4,12 @@
 ## IABR v 3.2.1  | work in progress |
 ## ==================================
 
-### step 1: fullscreen, info tab, mobile
+ step 1: fullscreen, info tab, mobile
 
 
+
+
+## ==================================
 ## Introduction
 
 A Islandora wrapper for the Internet Archive BookReader.
