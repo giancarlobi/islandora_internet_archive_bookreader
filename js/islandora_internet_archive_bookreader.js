@@ -82,6 +82,7 @@
 		image_max_width: settings.islandoraInternetArchiveBookReader.image_max_width,
 		djatokaUri: settings.islandoraInternetArchiveBookReader.djatokaUri,
 		compression: settings.islandoraInternetArchiveBookReader.compression,
+		searchUri: settings.islandoraInternetArchiveBookReader.searchUri,
 	});
 	BookReader.prototype.setup = (function (super_) {
     		return function (options) {
@@ -94,6 +95,7 @@
 			this.djatokaUri = options.djatokaUri;
 			this.compression = options.compression;
 			this.fullscreen = false;
+			this.searchUri = options.searchUri;
     		};
 	})(BookReader.prototype.setup);
 
@@ -240,4 +242,93 @@ BookReader.prototype.goFullScreen = function() {
 		'height': '100%',
       	});
       	this.resize();
+}
+
+// override search
+BookReader.prototype.search = function(term, options) {
+    options = options !== undefined ? options : {};
+    var that = this;
+	var defaultOptions = {
+        // {bool} (default=false) goToFirstResult - jump to the first result
+        goToFirstResult: true,
+        // {bool} (default=false) disablePopup - don't show the modal progress
+        disablePopup: false,
+        error: that.BRSearchCallbackErrorDesktop,
+        success: that.BRSearchCallback,
+      };
+    var url = this.searchUri.replace('TERM', encodeURI(term));
+    term = term.replace(/\//g, ' '); // strip slashes, since this goes in the url
+    this.searchTerm = term;
+    this.removeSearchResults();
+	this.updateLocationHash(true);
+    this.showProgressPopup('<img id="searchmarker" src="'+ this.imagesBaseURL + 'marker_srch-on.png'+'">' + Drupal.t('Search results will appear below ...') + '</img>');
+   
+    $.ajax({url:url, dataType:'json',
+            success: function(data, status, xhr) {
+              that.BRSearchCallback(data);
+            },
+            error: function() {
+              alert("Search call to " + url + " failed");
+            }
+           });
+}
+
+
+
+/**
+// override BRSearchCallback (previous v2)
+BookReader.prototype.BRSearchCallback = function(results, options) {
+    this.removeSearchResults();
+    this.searchResults = results;
+    if (0 == results.matches.length) {
+      var errStr  = Drupal.t('No matches were found.');
+      var timeout = 1000;
+      if (false === results.indexed) {
+        errStr  = "<p>" + Drupal.t("This @content_type hasn't been indexed for searching yet. We've just started indexing it, so search should be available soon. Please try again later. Thanks!", {'@content_type': this.content_type}) + "</p>";
+        timeout = 5000;
+      }
+      $(this.popup).html(errStr);
+      var that = this;
+      setTimeout(function(){
+        $(that.popup).fadeOut('slow', function() {
+          that.removeProgressPopup();
+        })
+      },timeout);
+      return;
+    }
+    var i;
+    for (i=0; i<results.matches.length; i++) {
+      this.addSearchResult(results.matches[i].text, this.leafNumToIndex(results.matches[i].par[0].page));
+    }
+    this.updateSearchHilites();
+    this.removeProgressPopup();
+}
+**/
+// override BRSearchCallback (current v3):
+// br. => this.
+// ToDo pass options.goToFirstResult
+BookReader.prototype.BRSearchCallback = function(results, options) {
+    this.searchResults = results;
+    $('#BRnavpos .search').remove();
+    $('#mobileSearchResultWrapper').empty(); // Empty mobile results
+
+    // Update Mobile count
+    var mobileResultsText = results.matches.length == 1 ? "1 match" : results.matches.length + " matches";
+    $('#mobileSearchResultWrapper').append("<div class='mobileNumResults'>"+mobileResultsText+" for &quot;"+this.searchTerm+"&quot;</div>");
+
+    var i, firstResultIndex = null;
+    for (i=0; i < results.matches.length; i++) {
+        	this.addSearchResult(results.matches[i].text, this.leafNumToIndex(results.matches[i].par[0].page));
+
+		// force jump to first result
+		// if (i === 0 && this.options.goToFirstResult === true) {
+       		if (i === 0) {
+          		firstResultIndex = this.leafNumToIndex(results.matches[i].par[0].page);
+        	}
+    }
+    this.updateSearchHilites();
+    this.removeProgressPopup();
+    if (firstResultIndex !== null) {
+        	this.jumpToIndex(firstResultIndex);
+    }
 }
