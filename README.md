@@ -5,6 +5,7 @@
 ## ==================================
 
  step 1: fullscreen, info tab, mobile
+ step 2.0: search is working, we need more code make-up
 
 
 
