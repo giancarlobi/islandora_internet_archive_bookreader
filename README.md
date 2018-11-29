@@ -7,6 +7,8 @@
  step 1: fullscreen, info tab, mobile
  
  step 2.0: search is working, we need more code make-up
+ 
+ step 2.1: less override code for search, popup for no result, ToDo: goToFirstResult and disablePopup as options in admin panel 
 
 
 
