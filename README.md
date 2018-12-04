@@ -10,6 +10,7 @@
  
  step 2.1: less override code for search, popup for no result, ToDo: goToFirstResult and disablePopup as options in admin panel 
 
+ step 3: fulltext
 
 
 
