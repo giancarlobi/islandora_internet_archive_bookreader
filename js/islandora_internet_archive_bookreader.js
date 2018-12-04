@@ -1,9 +1,6 @@
 /**
- * @file
- * Defines initializing/attaching the Book Reader to the
- * defined element.
- */
-
+//§§ set BookReader
+**/
 
 (function ($) {
   Drupal.behaviors.islandoraInternetArchiveBookReader = {
@@ -83,6 +80,8 @@
 		djatokaUri: settings.islandoraInternetArchiveBookReader.djatokaUri,
 		compression: settings.islandoraInternetArchiveBookReader.compression,
 		searchUri: settings.islandoraInternetArchiveBookReader.searchUri,
+		pages: settings.islandoraInternetArchiveBookReader.pages,
+		textUri: settings.islandoraInternetArchiveBookReader.textUri,
 	});
 	BookReader.prototype.setup = (function (super_) {
     		return function (options) {
@@ -96,6 +95,8 @@
 			this.compression = options.compression;
 			this.fullscreen = false;
 			this.searchUri = options.searchUri;
+			this.pages = options.pages;
+			this.textUri = options.textUri;
     		};
 	})(BookReader.prototype.setup);
 
@@ -172,14 +173,21 @@ BookReader.prototype.getImageserverUri = function(resource_uri, reduce, rotate) 
         }
 };
 
+/**
+//§§ Info DIV
+**/
+
 // override buildInfoDiv
 BookReader.prototype.buildInfoDiv = function(jInfoDiv) {
       	jInfoDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
 	jInfoDiv.append(this.IslandoraInfoDIV);
 }
 
+/**
+//§§ Fullscreen
+**/
+
 // Extend buildToolbarElement: add fullscreen button
-// 
 BookReader.prototype.buildToolbarElement = (function (super_) {
     	return function () {
         	var $el = super_.call(this);
@@ -192,7 +200,6 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
 })(BookReader.prototype.buildToolbarElement);
 
 // Extend initToolbar: add fullscreen button click code
-//
 BookReader.prototype.initToolbar = (function (super_) {
     	return function (mode, ui) {
         	super_.apply(this, arguments);
@@ -225,9 +232,7 @@ BookReader.prototype.initToolbar = (function (super_) {
    	};
 })(BookReader.prototype.initToolbar);
 
-/**
-* Go Fullscreen regardless of current state.
-*/
+// Go Fullscreen regardless of current state.
 BookReader.prototype.goFullScreen = function() {
     	this.fullscreen = true;
       	this.refs.$br.css({
@@ -244,102 +249,176 @@ BookReader.prototype.goFullScreen = function() {
       	this.resize();
 }
 
+/**
+//§§ Search
+**/
+
 // override search
-//
 BookReader.prototype.search = function(term, options) {
 
-//§
-    br = this;
+	//§
+    	br = this;
 
-    options = options !== undefined ? options : {};
-    var defaultOptions = {
+    	options = options !== undefined ? options : {};
+    	var defaultOptions = {
 
-//§ ToDo: goToFirstResult and disablePopup as options in admin panel
+		//§ ToDo: goToFirstResult and disablePopup as options in admin panel
 
-        // {bool} (default=false) goToFirstResult - jump to the first result
-        goToFirstResult: true,
-        // {bool} (default=false) disablePopup - don't show the modal progress
-        disablePopup: false,
-        error: br.BRSearchCallbackErrorDesktop,
-        success: br.BRSearchCallback,
-    };
-    options = jQuery.extend({}, defaultOptions, options);
+		// {bool} (default=false) goToFirstResult - jump to the first result
+		goToFirstResult: true,
+		// {bool} (default=false) disablePopup - don't show the modal progress
+		disablePopup: false,
+		error: br.BRSearchCallbackErrorDesktop,
+		success: br.BRSearchCallback,
+    	};
+    	options = jQuery.extend({}, defaultOptions, options);
+	$('.textSrch').blur(); //cause mobile safari to hide the keyboard
+    	this.removeSearchResults();
 
-    $('.textSrch').blur(); //cause mobile safari to hide the keyboard
+	//§ No search/term in the url
+	/**    this.searchTerm = term;
+	    this.searchTerm = this.searchTerm.replace(/\//g, ' '); // strip slashes, since this goes in the url
+	    if (this.enableUrlPlugin) this.updateLocationHash(true);
+	**/
 
-    this.removeSearchResults();
+	// Add quotes to the term. This is to compenstate for the backends default OR query
+	term = term.replace(/['"]+/g, '');
+	term = '"' + term + '"';
 
-//§ No search/term in the url
-/**    this.searchTerm = term;
-    this.searchTerm = this.searchTerm.replace(/\//g, ' '); // strip slashes, since this goes in the url
-    if (this.enableUrlPlugin) this.updateLocationHash(true);
-**/
+	//§ Islandora url callback
+    	var url = this.searchUri.replace('TERM', encodeURI(term));
 
-    // Add quotes to the term. This is to compenstate for the backends default OR query
-    term = term.replace(/['"]+/g, '');
-    term = '"' + term + '"';
+    	if (!options.disablePopup) {
+        	this.showProgressPopup('<img id="searchmarker" src="'+this.imagesBaseURL + 'marker_srch-on.png'+'"> Search results will appear below...');
+    	}
 
-//§ Islandora url callback
-    var url = this.searchUri.replace('TERM', encodeURI(term));
-/**    // Remove the port and userdir
-    var url = 'https://' + this.server.replace(/:.+/, '') + this.searchInsideUrl + '?';
-
-
-    // Remove subPrefix from end of path
-    var path = this.bookPath;
-    var subPrefixWithSlash = '/' + this.subPrefix;
-    if (this.bookPath.length - this.bookPath.lastIndexOf(subPrefixWithSlash) == subPrefixWithSlash.length) {
-      path = this.bookPath.substr(0, this.bookPath.length - subPrefixWithSlash.length);
-    }
-
-    var urlParams = {
-      'item_id': this.bookId,
-      'doc': this.subPrefix,
-      'path': path,
-      'q': term,
-    };
-
-    var paramStr = $.param(urlParams);
-
-    // NOTE that the API does not expect / (slashes) to be encoded. (%2F) won't work
-    paramStr = paramStr.replace(/%2F/g, '/');
-
-    url += paramStr;
-**/
-
-    if (!options.disablePopup) {
-        this.showProgressPopup('<img id="searchmarker" src="'+this.imagesBaseURL + 'marker_srch-on.png'+'"> Search results will appear below...');
-    }
-
-//§ Modified ajax call
-    $.ajax({
-    	url:url, 
-	dataType:'json',
-        success: function(data) {
-            if (data.error || 0 == data.matches.length) {
-                br.BRSearchCallbackErrorDesktop(data);
-            } else {
-                br.BRSearchCallback(data, options);
-            }
-        },
-        error: function() {
-              br.BRSearchCallbackErrorDesktop(data);
-        }
-    });
-/**
-    $.ajax({
-        url:url,
-        dataType:'jsonp',
-        success: function(data) {
-            if (data.error || 0 == data.matches.length) {
-                options.error.call(br, data, options);
-            } else {
-                options.success.call(br, data, options);
-            }
-        },
-    });
-**/
+	//§ Modified ajax call
+    	$.ajax({
+    		url:url, 
+		dataType:'json',
+        	success: function(data) {
+            		if (data.error || 0 == data.matches.length) {
+                		br.BRSearchCallbackErrorDesktop(data);
+            		} else {
+                		br.BRSearchCallback(data, options);
+            		}
+        	},
+        	error: function() {
+              		br.BRSearchCallbackErrorDesktop(data);
+        	}
+    	});
 };
 
+/**
+//§§ Fulltext
+**/
 
+// Extend buildToolbarElement: add fulltext button 
+BookReader.prototype.buildToolbarElement = (function (super_) {
+    	return function () {
+        	var $el = super_.call(this);
+          	var readIcon = '';
+          	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
+	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\">Full text</span></button>"
+          		+ "</span>");
+        	return $el;
+    	};
+})(BookReader.prototype.buildToolbarElement);
 
+// Extend initToolbar: add fulltext button click code
+BookReader.prototype.initToolbar = (function (super_) {
+    	return function (mode, ui) {
+        	super_.apply(this, arguments);
+
+		var self = this;
+
+		this.refs.$BRtoolbar.find('.fulltext').colorbox({
+			inline: true,
+			opacity: "0.5",
+			href: "#BRfulltext",
+			onLoad: function() {
+			    	self.trigger('stop');
+				self.buildFulltextDiv($('#BRfulltext'));
+				
+			}
+		});
+		$('<div style="display: none;"></div>').append(
+        		self.blankFulltextDiv()
+		).appendTo($('body'));
+   	};
+})(BookReader.prototype.initToolbar);
+
+//add blankFulltextDiv
+BookReader.prototype.blankFulltextDiv = function() {
+    	return $([
+        	'<div class="BRfloat" id="BRfulltext">',
+            	'<div class="BRfloatHead">',
+                'Full text',
+                '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close();"><span class="shift">Close</span></a>',
+            	'</div>',
+        	'</div>'].join('\n')
+    	);
+};
+
+//add buildFulltextDiv
+BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
+
+	// Remove these legacy elements
+        jFulltextDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
+	// clear content
+        jFulltextDiv.find('.BRfloatMeta').remove();
+	jFulltextDiv.append($("<div class=\"BRfloatMeta\"></div>"));
+
+    	jFulltextDiv.find('.BRfloatMeta').height(600);
+    	jFulltextDiv.find('.BRfloatMeta').width(780);
+
+   	if (1 == this.mode) {
+	      	var hash_arr = this.oldLocationHash.split("/");
+	      	var index = hash_arr[1];
+		if (typeof this.options.pages[index-1] != 'undefined') {
+			var pid = this.options.pages[index-1].pid;
+		}
+	      	$.get(this.options.textUri.replace('PID', pid),
+		    	function(data) {
+		        	jFulltextDiv.find('.BRfloatMeta').html("<a href=\"/islandora/object/" + pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
+				+ pid + "/datastream/TN\" height=\"100\"></a><br><strong>Page " + index + "</strong><HR>" + data);
+			}
+		);
+    	} else if (3 == this.mode) {
+      		jFulltextDiv.find('.BRfloatMeta').html('<div><strong>' + Drupal.t('Full text not supported for this view.') + '</strong></div>');
+    	} else {
+	      	var twoPageText = $([
+	      		'<div class="textTop" style="font-size: 1.1em">',
+		 	'<div class="textLeft" style="padding: 10px"><p>Left page loading...</p></div>',
+		 	'<div class="textRight" style="padding: 10px"><p>Right page loading...</p></div>',
+	      		'</div>'].join('\n'));
+	      	jFulltextDiv.find('.BRfloatMeta').html(twoPageText);
+	      	var indices = this.getSpreadIndices(this.currentIndex());
+		if (typeof this.options.pages[indices[0]] != 'undefined') {
+			var left_pid = this.options.pages[indices[0]].pid;
+		}
+		if (typeof this.options.pages[indices[1]] != 'undefined') {
+			var right_pid = this.options.pages[indices[1]].pid;
+		}
+	      	if(left_pid) {
+			$.get(this.options.textUri.replace('PID', left_pid),
+		      		function(data) {
+		        		jFulltextDiv.find('.textLeft').html("<a href=\"/islandora/object/" + left_pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
+					+ left_pid + "/datastream/TN\" height=\"100\"></a><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
+		      		}
+			);
+	      	} else {
+			jFulltextDiv.find('.textLeft').html("<HR>");
+		}
+	      	if(right_pid) {
+			$.get(this.options.textUri.replace('PID', right_pid),
+		      		function(data) {
+		        		jFulltextDiv.find('.textRight').html("<a href=\"/islandora/object/" + right_pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
+					+ right_pid + "/datastream/TN\" height=\"100\" ></a><br><strong>Page " + (indices[1]+1) + "</strong><HR>" + data);
+		      		}
+			);
+	      	} else {
+		        jFulltextDiv.find('.textRight').html("<HR>");
+		}
+	}
+}
