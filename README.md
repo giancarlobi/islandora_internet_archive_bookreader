@@ -13,6 +13,8 @@
  step 3: fulltext
  
  step 4.0: integration with openseadragon, Page view, first draft
+ 
+ step 4.1: Page view: viewers inline when 2-page, redraw Iabr after fullscreen OSD, some code cleanup
 
 
 
