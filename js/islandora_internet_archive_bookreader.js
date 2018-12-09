@@ -451,9 +451,7 @@ BookReader.prototype.initToolbar = (function (super_) {
 			inline: true,
 			opacity: "0.5",
 			href: "#BRviewpage",
-
 			width: "70%",
-
 			onLoad: function() {
 			    	self.trigger('stop');
 				self.buildViewpageDiv($('#BRviewpage'));
@@ -472,10 +470,39 @@ BookReader.prototype.blankViewpageDiv = function() {
         	'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none">',
             	'<div class="BRfloatHead">',
                 'View page',
-                '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close();"><span class="shift">Close</span></a>',
+                '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close(); $(' + "'" + '.BookReader' + "'" + ').resize()"><span class="shift">Close</span></a>',
             	'</div>',
         	'</div>'].join('\n')
     	);
+};
+
+//add buildOSD
+BookReader.prototype.buildOSD = function(id, style, tilesource) {
+	return $([
+	'<div id="' + id + '" allowfullscreen style="' + style + '"></div>',
+ 	'<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>',
+	'<script type="text/javascript">',
+    	'var viewer = OpenSeadragon({',
+		'element: document.getElementById("' + id + '"),',
+		'prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/images/",',
+	    	'homeFillsViewer: false,',
+	    	'showZoomControl: false,',
+		'showNavigator:  false,',
+		'showHomeControl: false,',
+		'showFullPageControl: true,',
+		'showRotationControl: true,',
+		'navigatorPosition:   "TOP_RIGHT",',
+   	 	'sequenceMode: false,',
+		'preserveViewport: true,',
+		'defaultZoomLevel: 0,',
+	    	'constrainDuringPan: false,',
+	    	'visibilityRatio: 1,',
+	    	'minZoomImageRatio: 1,',
+		'tileSources: "' + tilesource + '",',
+	'});',
+	'</script>'].join('\n')
+	);
+
 };
 
 //add buildViewpageDiv
@@ -491,54 +518,18 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 //    	jViewpageDiv.find('.BRfloatMeta').width(780);
 
 
-
    	if (1 == this.mode) {
 	      	var hash_arr = this.oldLocationHash.split("/");
 	      	var index = hash_arr[1];
 		if (typeof this.options.pages[index-1] != 'undefined') {
 			var pid = this.options.pages[index-1].pid;
-
-
-	      	var osd = $([
-	      		'<div id="openseadragon_info" allowfullscreen style="height: 100%"></div>',
-		 	'<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>',
-	'<script type="text/javascript">',
-    	'var viewer = OpenSeadragon({',
-		'element: document.getElementById("openseadragon_info"),',
-		'prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon//images/",',
-            	'homeFillsViewer: false,',
-            	'showZoomControl: false,',
-		'showNavigator:  false,',
-		'showHomeControl: false,',
-		'showFullPageControl: true,',
-		'showRotationControl: true,',
-		'navigatorPosition:   "TOP_RIGHT",',
-   	 	'sequenceMode: false,',
-		'preserveViewport: true,',
-		'defaultZoomLevel: 0,',
-            	'constrainDuringPan: false,',
-            	'visibilityRatio: 1,',
-            	'minZoomImageRatio: 1,',
-		'tileSources: "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F' + pid + '%2Fdatastreams%2FJP2%2Fcontent/info.json",',
-		'});',
-		'</script>'].join('\n'));
-	
-		jViewpageDiv.find('.BRfloatMeta').html(osd);
-
+			osd_single = this.buildOSD("openseadragon_info", "height: 100%", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			jViewpageDiv.find('.BRfloatMeta').html(osd_single);
 		}
     	} else if (3 == this.mode) {
       		var osd = $('<div><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
 		jViewpageDiv.find('.BRfloatMeta').html(osd);
     	} else {
-
-/**
-	      	var twoPageText = $([
-	      		'<div class="textTop" style="font-size: 1.1em">',
-		 	'<div class="textLeft" style="padding: 10px"><p>Left page loading...</p></div>',
-		 	'<div class="textRight" style="padding: 10px"><p>Right page loading...</p></div>',
-	      		'</div>'].join('\n'));
-	      	jViewpageDiv.find('.BRfloatMeta').html(twoPageText);
-**/
 	      	var indices = this.getSpreadIndices(this.currentIndex());
 		if (typeof this.options.pages[indices[0]] != 'undefined') {
 			var left_pid = this.options.pages[indices[0]].pid;
@@ -547,94 +538,18 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 			var right_pid = this.options.pages[indices[1]].pid;
 		}
 	      	if(left_pid) {
-		      	var osd_l = $([
-		      		'<div id="openseadragon_info_l" allowfullscreen style="height: 100%; width: 40%"></div>',
-			 	'<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>',
-				'<script type="text/javascript">',
-	    			'var viewer = OpenSeadragon({',
-				'element: document.getElementById("openseadragon_info_l"),',
-				'prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon//images/",',
-			    	'homeFillsViewer: false,',
-			    	'showZoomControl: false,',
-				'showNavigator:  false,',
-				'showHomeControl: false,',
-				'showFullPageControl: true,',
-				'showRotationControl: true,',
-				'navigatorPosition:   "TOP_RIGHT",',
-		   	 	'sequenceMode: false,',
-				'preserveViewport: true,',
-				'defaultZoomLevel: 0,',
-			    	'constrainDuringPan: false,',
-			    	'visibilityRatio: 1,',
-			    	'minZoomImageRatio: 1,',
-				'tileSources: "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F' + left_pid + '%2Fdatastreams%2FJP2%2Fcontent/info.json",',
-				'});',
-				'</script>'].join('\n'));
-		
-			jViewpageDiv.find('.BRfloatMeta').html(osd_l);
+			osd_left = this.buildOSD("openseadragon_info_l", "height: 95%; width: 45%; display: inline-block", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + left_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			jViewpageDiv.find('.BRfloatMeta').html(osd_left);
 	      	} else {
-		        jViewpageDiv.find('.BRfloatMeta').html("<HR>");
+		        jViewpageDiv.find('.BRfloatMeta').html('<div id=openseadragon_info_l allowfullscreen style="height: 95%; width: 45%; display: inline-block"></div>');
 		}
 	      	if(right_pid) {
-
-		      	var osd_r = $([
-		      		'<div id="openseadragon_info_r" allowfullscreen style="height: 100%; width: 40%"></div>',
-			 	'<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>',
-				'<script type="text/javascript">',
-	    			'var viewer = OpenSeadragon({',
-				'element: document.getElementById("openseadragon_info_r"),',
-				'prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon//images/",',
-			    	'homeFillsViewer: false,',
-			    	'showZoomControl: false,',
-				'showNavigator:  false,',
-				'showHomeControl: false,',
-				'showFullPageControl: true,',
-				'showRotationControl: true,',
-				'navigatorPosition:   "TOP_RIGHT",',
-		   	 	'sequenceMode: false,',
-				'preserveViewport: true,',
-				'defaultZoomLevel: 0,',
-			    	'constrainDuringPan: false,',
-			    	'visibilityRatio: 1,',
-			    	'minZoomImageRatio: 1,',
-				'tileSources: "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F' + right_pid + '%2Fdatastreams%2FJP2%2Fcontent/info.json",',
-				'});',
-				'</script>'].join('\n'));
-		
-			jViewpageDiv.find('.BRfloatMeta').append(osd_r);
+			osd_right = this.buildOSD("openseadragon_info_r", "height: 95%; width: 45%; display: inline-block", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + right_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			jViewpageDiv.find('.BRfloatMeta').append(osd_right);
 	      	} else {
-		        jViewpageDiv.find('.BRfloatMeta').append("<HR>");
+		        jViewpageDiv.find('.BRfloatMeta').append('<div id=openseadragon_info_r allowfullscreen style="height: 95%; width: 45%; display: inline-block"></div>');
 		}
 
 	}
-
-	      	
-
-
-
-/**
-<div id="openseadragon_info" allowfullscreen style="height: 200px"></div>
-<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>
-<script type="text/javascript">
-    var viewer = OpenSeadragon({
-element: document.getElementById("openseadragon_info"),
-prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon//images/",
-
-            homeFillsViewer: true,
-            showZoomControl: false,
-            constrainDuringPan: true,
-            visibilityRatio: 1,
-            minZoomImageRatio: 1,
-
-
-tileSources: "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2Fv2p2text%253A107%2Fdatastreams%2FJP2%2Fcontent/info.json",
-
-
-	});
-</script>
-
-**/
-
-
 
 }
