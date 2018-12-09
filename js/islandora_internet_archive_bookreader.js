@@ -451,7 +451,8 @@ BookReader.prototype.initToolbar = (function (super_) {
 			inline: true,
 			opacity: "0.5",
 			href: "#BRviewpage",
-			width: "70%",
+			width: "80%",
+			height: "80%",
 			onLoad: function() {
 			    	self.trigger('stop');
 				self.buildViewpageDiv($('#BRviewpage'));
@@ -512,10 +513,11 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
         jViewpageDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
 	// clear content
         jViewpageDiv.find('.BRfloatMeta').remove();
-	jViewpageDiv.append($("<div class=\"BRfloatMeta\"></div>"));
+	jViewpageDiv.append($("<div class=\"BRfloatMeta\" style=\"text-align: center; background-color: black;\"></div>"));
 
     	jViewpageDiv.find('.BRfloatMeta').height(600);
 //    	jViewpageDiv.find('.BRfloatMeta').width(780);
+	
 
 
    	if (1 == this.mode) {
@@ -523,11 +525,11 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 	      	var index = hash_arr[1];
 		if (typeof this.options.pages[index-1] != 'undefined') {
 			var pid = this.options.pages[index-1].pid;
-			osd_single = this.buildOSD("openseadragon_info", "height: 100%", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			osd_single = this.buildOSD("openseadragon_info", "height: 99%; margin: 2px;", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
 			jViewpageDiv.find('.BRfloatMeta').html(osd_single);
 		}
     	} else if (3 == this.mode) {
-      		var osd = $('<div><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
+      		var osd = $('<div style="color: white;"><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
 		jViewpageDiv.find('.BRfloatMeta').html(osd);
     	} else {
 	      	var indices = this.getSpreadIndices(this.currentIndex());
@@ -538,16 +540,16 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 			var right_pid = this.options.pages[indices[1]].pid;
 		}
 	      	if(left_pid) {
-			osd_left = this.buildOSD("openseadragon_info_l", "height: 95%; width: 45%; display: inline-block", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + left_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			osd_left = this.buildOSD("openseadragon_info_l", "height: 99%; width: 49%; display: inline-block; margin: 2px;", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + left_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
 			jViewpageDiv.find('.BRfloatMeta').html(osd_left);
 	      	} else {
-		        jViewpageDiv.find('.BRfloatMeta').html('<div id=openseadragon_info_l allowfullscreen style="height: 95%; width: 45%; display: inline-block"></div>');
+		        jViewpageDiv.find('.BRfloatMeta').html('<div id=openseadragon_info_l allowfullscreen style="height: 99%; width: 49%; display: inline-block; margin: 2px;"></div>');
 		}
 	      	if(right_pid) {
-			osd_right = this.buildOSD("openseadragon_info_r", "height: 95%; width: 45%; display: inline-block", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + right_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
+			osd_right = this.buildOSD("openseadragon_info_r", "height: 99%; width: 49%; display: inline-block; margin: 2px;", "http://v2p2arch.to.cnr.it/iiif-server/iiif/2/http%3A%2F%2F150.145.48.37%3A8080%2Ffedora%2Fobjects%2F" + right_pid + "%2Fdatastreams%2FJP2%2Fcontent/info.json");
 			jViewpageDiv.find('.BRfloatMeta').append(osd_right);
 	      	} else {
-		        jViewpageDiv.find('.BRfloatMeta').append('<div id=openseadragon_info_r allowfullscreen style="height: 95%; width: 45%; display: inline-block"></div>');
+		        jViewpageDiv.find('.BRfloatMeta').append('<div id=openseadragon_info_r allowfullscreen style="height: 99%; width: 49%; display: inline-block; margin: 2px;"></div>');
 		}
 
 	}
