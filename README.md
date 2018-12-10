@@ -17,6 +17,8 @@
  step 4.1: Page view: viewers inline when 2-page, redraw Iabr after fullscreen OSD, some code cleanup
  
  step 4.2: Page view: makeup css colorbox window
+ 
+ step 4.3: Page view: IIIF required, tilesource from IABR settings, some makeup
 
 
 
