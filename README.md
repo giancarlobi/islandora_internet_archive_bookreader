@@ -19,6 +19,8 @@
  step 4.2: Page view: makeup css colorbox window
  
  step 4.3: Page view: IIIF required, tilesource from IABR settings, some makeup
+ 
+ step 4.4: Page view: added logic to disable zoom buttons when active, some makeup
 
 
 
