@@ -106,7 +106,7 @@
 
       	// to avoid overflow icon on the bottom right side
       	$('div#BRpage').css({
-        	'width': '300'
+        	'width': 'auto'
       	});
 
 	// to avoid overflow search button on the top right side
@@ -187,6 +187,8 @@ BookReader.prototype.buildInfoDiv = function(jInfoDiv) {
       	jInfoDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
 	jInfoDiv.append(this.IslandoraInfoDIV);
 }
+
+
 
 /**
 //§§ Fullscreen
@@ -324,7 +326,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
         	var $el = super_.call(this);
           	var readIcon = '';
           	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
-	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\">Full text</span></button>"
+	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
           		+ "</span>");
         	return $el;
     	};
@@ -378,6 +380,11 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
     	jFulltextDiv.find('.BRfloatMeta').width(780);
 
    	if (1 == this.mode) {
+	      	var onePageText = $([
+	      		'<div class="textTop" style="font-size: 1.1em"><p>Page loading...</p>',
+	      		'</div>'].join('\n'));
+	      	jFulltextDiv.find('.BRfloatMeta').html(onePageText);
+
 	      	var hash_arr = this.oldLocationHash.split("/");
 	      	var index = hash_arr[1];
 		if (typeof this.options.pages[index-1] != 'undefined') {
@@ -385,8 +392,8 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 		}
 	      	$.get(this.options.textUri.replace('PID', pid),
 		    	function(data) {
-		        	jFulltextDiv.find('.BRfloatMeta').html("<a href=\"/islandora/object/" + pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
-				+ pid + "/datastream/TN\" height=\"100\"></a><br><strong>Page " + index + "</strong><HR>" + data);
+		        	jFulltextDiv.find('.BRfloatMeta').html("<img src=\"/islandora/object/" 
+				+ pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + index + "</strong><HR>" + data);
 			}
 		);
     	} else if (3 == this.mode) {
@@ -408,8 +415,9 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 	      	if(left_pid) {
 			$.get(this.options.textUri.replace('PID', left_pid),
 		      		function(data) {
-		        		jFulltextDiv.find('.textLeft').html("<a href=\"/islandora/object/" + left_pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
-					+ left_pid + "/datastream/TN\" height=\"100\"></a><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
+		        		jFulltextDiv.find('.textLeft').html("<img src=\"/islandora/object/" 
+					+ left_pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
+
 		      		}
 			);
 	      	} else {
@@ -418,8 +426,8 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 	      	if(right_pid) {
 			$.get(this.options.textUri.replace('PID', right_pid),
 		      		function(data) {
-		        		jFulltextDiv.find('.textRight').html("<a href=\"/islandora/object/" + right_pid + "\" target=\"_blank\"><img src=\"/islandora/object/" 
-					+ right_pid + "/datastream/TN\" height=\"100\" ></a><br><strong>Page " + (indices[1]+1) + "</strong><HR>" + data);
+		        		jFulltextDiv.find('.textRight').html("<img src=\"/islandora/object/" 
+					+ right_pid + "/datastream/TN\" height=\"100\" ><br><strong>Page " + (indices[1]+1) + "</strong><HR>" + data);
 		      		}
 			);
 	      	} else {
@@ -434,16 +442,18 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 // IIIF required
 **/
 
-// Extend buildToolbarElement: add viewpage button if IIIF server tile source
+// Extend buildToolbarElement: add viewpage button and remove zoom buttons when IIIF server tile source
 BookReader.prototype.buildToolbarElement = (function (super_) {
     	return function () {
         	var $el = super_.call(this);
           	var readIcon = '';
 		if (this.imageServer == 'iiif') {
 		  	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
-		  		+ "<button class='BRtext viewpage'><span class=\"hide-md\">View page</span></button>"
+		  		+ "<button class='BRtext viewpage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
 		  		+ "</span>");
 		};
+		//hide zoom controls
+		$el.find('.BRtoolbarSectionZoom').remove();
         	return $el;
     	};
 })(BookReader.prototype.buildToolbarElement);
@@ -480,7 +490,7 @@ BookReader.prototype.blankViewpageDiv = function() {
     	return $([
         	'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none">',
             	'<div class="BRfloatHead">',
-                'View page',
+                'Page zoom',
                 '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close(); $(' + "'" + '.BookReader' + "'" + ').resize()"><span class="shift">Close</span></a>',
             	'</div>',
         	'</div>'].join('\n')
