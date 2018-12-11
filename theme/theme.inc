@@ -66,6 +66,10 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
         'image_max_width' => $image_max_width,
         'imageServer' => $imageServer,
 
+	'toc' => theme('islandora_internet_archive_bookreader_book_toc', array('object' => $object)),
+//	'toc' => theme('islandora_internet_archive_bookreader_book_toc'),
+//	'toc' => '{pagenum: "3", level: 1, label: "CHAPTER I", type: "1", title: "FIRST"}',
+
     ),
   );
 
@@ -329,4 +333,35 @@ function islandora_internet_archive_bookreader_info_fields(AbstractObject $objec
   }
   // Remove empty fields.
   return array_filter($fields);
+}
+
+/**
+ * Retrieves toc to display in the BookReader's "chapters".
+ *
+ * @param AbstractObject $object
+ *   The object to fetch the information from.
+ *
+ * @return string [JSON formatted]
+ *   
+ */
+function theme_islandora_internet_archive_bookreader_book_toc(array $variables) {
+  module_load_include('inc', 'islandora', 'includes/metadata');
+
+        //--Name of Views
+        // hardcoded, we need a variable into admin panel
+	$tocTab_views = variable_get('islandora_internet_archive_bookreader_toc_views', 'bookreader_toc_tab');
+  	
+	$object = $variables['object'];
+
+	//--toc_views empty
+	if ($tocTab_views ==''){
+		$content='[]';
+  	}
+  	//--toc_views not empty = use Views (PID passed to views as contextual variable)
+  	else {
+    		$args = array($object->id);
+    		$view = views_get_view($tocTab_views);
+    		$content=$view->preview('default', $args);
+  	}
+  	return $content;
 }
