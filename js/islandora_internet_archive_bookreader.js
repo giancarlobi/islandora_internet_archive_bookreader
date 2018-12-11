@@ -82,6 +82,9 @@
 		searchUri: settings.islandoraInternetArchiveBookReader.searchUri,
 		pages: settings.islandoraInternetArchiveBookReader.pages,
 		textUri: settings.islandoraInternetArchiveBookReader.textUri,
+
+		IslandoraTOC: settings.islandoraInternetArchiveBookReader.toc,
+
 	});
 	BookReader.prototype.setup = (function (super_) {
     		return function (options) {
@@ -97,6 +100,8 @@
 			this.searchUri = options.searchUri;
 			this.pages = options.pages;
 			this.textUri = options.textUri;
+
+			this.IslandoraTOC = options.IslandoraTOC;
     		};
 	})(BookReader.prototype.setup);
 
@@ -346,7 +351,6 @@ BookReader.prototype.initToolbar = (function (super_) {
 			onLoad: function() {
 			    	self.trigger('stop');
 				self.buildFulltextDiv($('#BRfulltext'));
-				
 			}
 		});
 		$('<div style="display: none;"></div>').append(
@@ -417,7 +421,6 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 		      		function(data) {
 		        		jFulltextDiv.find('.textLeft').html("<img src=\"/islandora/object/" 
 					+ left_pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
-
 		      		}
 			);
 	      	} else {
@@ -501,11 +504,11 @@ BookReader.prototype.blankViewpageDiv = function() {
 BookReader.prototype.buildOSD = function(id, style, tilesource) {
 	return $([
 	'<div id="' + id + '" allowfullscreen style="' + style + '"></div>',
- 	'<script src="http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/openseadragon.js"></script>',
+ 	'<script src="/sites/all/libraries/openseadragon/openseadragon.js"></script>',
 	'<script type="text/javascript">',
     	'var viewer = OpenSeadragon({',
 		'element: document.getElementById("' + id + '"),',
-		'prefixUrl: "http://v2p2arch.to.cnr.it/sites/all/libraries/openseadragon/images/",',
+		'prefixUrl: "/sites/all/libraries/openseadragon/images/",',
 	    	'homeFillsViewer: false,',
 	    	'showZoomControl: false,',
 		'showNavigator:  false,',
@@ -535,7 +538,7 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
         jViewpageDiv.find('.BRfloatMeta').remove();
 	jViewpageDiv.append($("<div class=\"BRfloatMeta\" style=\"text-align: center; background-color: black;\"></div>"));
 
-    	jViewpageDiv.find('.BRfloatMeta').height(600);
+    	jViewpageDiv.find('.BRfloatMeta').height(500);
 //    	jViewpageDiv.find('.BRfloatMeta').width(780);
 	
    	if (1 == this.mode) {
@@ -567,4 +570,16 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 
 	}
 
-}
+};
+
+/**
+//§§ Chapters
+//
+**/
+
+// Override getOpenLibraryRecord
+// function 'callback' not used
+BookReader.prototype.getOpenLibraryRecord = function(callback) {
+	itoc = JSON.parse(this.IslandoraTOC.replace(/<(.|\n)*?>/g, '').trim());
+  	this.updateTOC(itoc);
+};
