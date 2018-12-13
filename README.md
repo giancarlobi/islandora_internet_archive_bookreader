@@ -23,6 +23,8 @@
  step 4.4: Page view: added logic to disable zoom buttons when active, some makeup
  
  step 5.0: add chapters (TOC) from Views
+ 
+ Step 5.1: chapter tooltip makeup postition
 
 
 
