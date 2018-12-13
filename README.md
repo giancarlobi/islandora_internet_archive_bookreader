@@ -27,6 +27,8 @@
  Step 5.1: chapter tooltip makeup postition
  
  step 6.0: SEARCH jump to the first result now works, results sorted on page number
+ 
+ step 6.1: SEARCH makeup tooltip position and text
 
 
 
