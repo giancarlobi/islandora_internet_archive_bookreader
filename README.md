@@ -25,6 +25,8 @@
  step 5.0: add chapters (TOC) from Views
  
  Step 5.1: chapter tooltip makeup postition
+ 
+ step 6.0: SEARCH jump to the first result now works, results sorted on page number
 
 
 
