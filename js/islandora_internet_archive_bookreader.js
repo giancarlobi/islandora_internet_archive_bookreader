@@ -313,6 +313,45 @@ BookReader.prototype.search = function(term, options) {
                 		br.BRSearchCallbackErrorDesktop(data);
             		} else {
                 		br.BRSearchCallback(data, options);
+				
+				//§ makeup tooltip position
+				$('div#BRnavline div.search').bt({
+					contentSelector: '$(this).find(".query")',
+					trigger: 'hover',
+					closeWhenOthersOpen: true,
+					cssStyles: {
+					    	padding: '12px 14px',
+					    	backgroundColor: '#fff',
+					    	border: '4px solid rgb(216,216,216)',
+					    	color: 'rgb(52,52,52)',
+						fontSize: '13px',
+						top: '-30px'
+					},
+					shrinkToFit: true,
+					width: '230px',
+					padding: 0,
+					spikeGirth: 0,
+					spikeLength: 0,
+					overlap: '0px',
+					overlay: false,
+					killTitle: true,
+					textzIndex: 9999,
+					boxzIndex: 9998,
+					wrapperzIndex: 9997,
+					offsetParent: null,
+					positions: ['right'],
+					fill: 'white',
+					windowMargin: 10,
+					strokeWidth: 0,
+					cornerRadius: 0,
+					centerPointX: 0,
+					centerPointY: 0,
+					shadow: false
+				});
+				//§ makeup tooltip text
+				$("div#BRnavline div.search div.query span").text(function(index, text) {
+				    	return text.replace("Page", " Page");
+				});
             		}
         	},
         	error: function() {
@@ -585,7 +624,7 @@ BookReader.prototype.getOpenLibraryRecord = function(callback) {
   	this.updateTOC(itoc);
 
 	//§ makeup tooltip position
-	$('.chapter').bt({
+	$('div#BRnavline div.chapter').bt({
 		contentSelector: '$(this).find(".title")',
 		trigger: 'hover',
 		closeWhenOthersOpen: true,
