@@ -491,7 +491,7 @@ BookReader.prototype.initToolbar = (function (super_) {
 //add blankViewpageDiv
 BookReader.prototype.blankViewpageDiv = function() {
     	return $([
-        	'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none">',
+        	'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none; height: 95%;">',
             	'<div class="BRfloatHead">',
                 'Page zoom',
                 '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close(); $(' + "'" + '.BookReader' + "'" + ').resize()"><span class="shift">Close</span></a>',
@@ -510,18 +510,19 @@ BookReader.prototype.buildOSD = function(id, style, tilesource) {
 		'element: document.getElementById("' + id + '"),',
 		'prefixUrl: "/sites/all/libraries/openseadragon/images/",',
 	    	'homeFillsViewer: false,',
-	    	'showZoomControl: false,',
+	    	'showZoomControl: true,',
 		'showNavigator:  false,',
 		'showHomeControl: false,',
 		'showFullPageControl: true,',
 		'showRotationControl: true,',
-		'navigatorPosition:   "TOP_RIGHT",',
+		'navigatorPosition: 0,',
+		'navigationControlAnchor: 2,',
    	 	'sequenceMode: false,',
 		'preserveViewport: true,',
 		'defaultZoomLevel: 0,',
 	    	'constrainDuringPan: false,',
 	    	'visibilityRatio: 1,',
-	    	'minZoomImageRatio: 1,',
+	    	'minZoomImageRatio: 0.9,',
 		'tileSources: "' + tilesource + '",',
 	'});',
 	'</script>'].join('\n')
@@ -538,7 +539,7 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
         jViewpageDiv.find('.BRfloatMeta').remove();
 	jViewpageDiv.append($("<div class=\"BRfloatMeta\" style=\"text-align: center; background-color: black;\"></div>"));
 
-    	jViewpageDiv.find('.BRfloatMeta').height(500);
+    	jViewpageDiv.find('.BRfloatMeta').height('inherit');
 //    	jViewpageDiv.find('.BRfloatMeta').width(780);
 	
    	if (1 == this.mode) {
@@ -582,4 +583,43 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 BookReader.prototype.getOpenLibraryRecord = function(callback) {
 	itoc = JSON.parse(this.IslandoraTOC.replace(/<(.|\n)*?>/g, '').trim());
   	this.updateTOC(itoc);
+
+	//§ makeup tooltip position
+	$('.chapter').bt({
+		contentSelector: '$(this).find(".title")',
+		trigger: 'hover',
+		closeWhenOthersOpen: true,
+		cssStyles: {
+		    	padding: '12px 14px',
+		    	backgroundColor: '#fff',
+		    	border: '4px solid rgb(216,216,216)',
+		    	fontSize: '13px',
+		    	color: 'rgb(52,52,52)',
+			//§
+			top: '-20px'
+			//§
+		},
+		shrinkToFit: true,
+		width: '200px',
+		padding: 0,
+		spikeGirth: 0,
+		spikeLength: 0,
+		overlap: '0',
+		overlay: false,
+		killTitle: true,
+		textzIndex: 9999,
+		boxzIndex: 9998,
+		wrapperzIndex: 9997,
+		offsetParent: null,
+		//§
+		positions: ['right'],
+		//§
+		fill: 'white',
+		windowMargin: 10,
+		strokeWidth: 0,
+		cornerRadius: 0,
+		centerPointX: 0,
+		centerPointY: 0,
+		shadow: false
+	});
 };
