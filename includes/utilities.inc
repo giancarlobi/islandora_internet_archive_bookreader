@@ -15,7 +15,9 @@ function islandora_internet_archive_bookreader_remap_highlighting_for_bookreader
   $results = array(
     'matches' => array(),
   );
-
+  //§ Sort results on page number
+  uasort($original_results, function ($a, $b) { return ($a['page']['sequence_number']<$b['page']['sequence_number']) ? -1 : 1; });
+  //§
   foreach ($original_results as $pid => $info) {
     foreach ($info['snippets'] as $snippet => $bounding_boxes) {
       $match = array(
