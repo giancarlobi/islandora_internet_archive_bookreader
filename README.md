@@ -29,6 +29,8 @@
  step 6.0: SEARCH jump to the first result now works, results sorted on page number
  
  step 6.1: SEARCH makeup tooltip position and text
+ 
+ Step 7.0: ZoomPage (aka Page view): using callback, lazyload, makeup
 
 
 
