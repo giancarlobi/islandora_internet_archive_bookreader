@@ -70,6 +70,9 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
 //	'toc' => theme('islandora_internet_archive_bookreader_book_toc'),
 //	'toc' => '{pagenum: "3", level: 1, label: "CHAPTER I", type: "1", title: "FIRST"}',
 
+      'osdUri' => url('internet_archive_bookreader_osd/PID', array('absolute' => TRUE)),
+
+
     ),
   );
 
