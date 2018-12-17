@@ -85,6 +85,8 @@
 
 		IslandoraTOC: settings.islandoraInternetArchiveBookReader.toc,
 
+		osdUri: settings.islandoraInternetArchiveBookReader.osdUri,
+
 	});
 	BookReader.prototype.setup = (function (super_) {
     		return function (options) {
@@ -102,6 +104,8 @@
 			this.textUri = options.textUri;
 
 			this.IslandoraTOC = options.IslandoraTOC;
+
+			this.osdUri = options.osdUri;
     		};
 	})(BookReader.prototype.setup);
 
@@ -480,134 +484,141 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 
 
 /**
-//§§ Viewpage
+//§§ ZoomPage
 // IIIF required
 **/
 
-// Extend buildToolbarElement: add viewpage button and remove zoom buttons when IIIF server tile source
+// Extend buildToolbarElement: add ZoomPage button and remove zoom buttons when IIIF server tile source
 BookReader.prototype.buildToolbarElement = (function (super_) {
     	return function () {
         	var $el = super_.call(this);
           	var readIcon = '';
 		if (this.imageServer == 'iiif') {
 		  	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
-		  		+ "<button class='BRtext viewpage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
+		  		+ "<button class='BRtext zoomPage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
 		  		+ "</span>");
+			//hide zoom controls
+			$el.find('.BRtoolbarSectionZoom').remove();
+			//set div class to render osd
+			$('<div style="display: none;"></div>').append(
+			'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none; height: 99%; text-align: center; background-color: black;"></div>'
+			).appendTo($('body'));
 		};
-		//hide zoom controls
-		$el.find('.BRtoolbarSectionZoom').remove();
         	return $el;
     	};
 })(BookReader.prototype.buildToolbarElement);
 
-// Extend initToolbar: add viewpage button click code if IIIF server tile source
+// Extend initToolbar: add ZoomPage button click code if IIIF server tile source
 BookReader.prototype.initToolbar = (function (super_) {
     	return function (mode, ui) {
         	super_.apply(this, arguments);
-
 		var self = this;
 		if (this.imageServer == 'iiif') {
-			this.refs.$BRtoolbar.find('.viewpage').colorbox({
+			this.refs.$BRtoolbar.find('.zoomPage').colorbox({
 				inline: true,
 				opacity: "0.5",
 				href: "#BRviewpage",
 				width: "80%",
 				height: "80%",
+				fastIframe: false,
+				onOpen: function() {
+					if (1 == self.mode) {
+					      	var osd_single_loading = $([
+					      		'<div class="textTop" style="font-size: 1.1em; color: white; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
+					      		'</div>'].join('\n'));
+					      	$('#BRviewpage').html(osd_single_loading);
+					} else if (2 == self.mode) {
+					      	var osd_double_loading = $([
+						 	'<div class="viewpLeft" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
+							'LOADING...</div>',
+						 	'<div class="viewpRight" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
+							'LOADING...</div>'].join('\n'));
+					      	$('#BRviewpage').html(osd_double_loading);
+					};
+				},
 				onLoad: function() {
 				    	self.trigger('stop');
+				},
+				onComplete: function() {
 					self.buildViewpageDiv($('#BRviewpage'));
-					
-				}
+					self.modeBeforePageview = self.mode;
+					if (1 == self.mode) {
+						self.indexBeforePageview = self.currentIndex();
+						self.switchMode(2);
+					};
+				},
+				onClosed: function() {
+					self.resize()
+					if (1 == self.modeBeforePageview) {
+						self.switchMode(1);
+						self.jumpToIndex(self.indexBeforePageview);
+					};
+				},
 			});
-			$('<div style="display: none;"></div>').append(
-				self.blankViewpageDiv()
-			).appendTo($('body'));
-		};
 
+		};
    	};
 })(BookReader.prototype.initToolbar);
-
-//add blankViewpageDiv
-BookReader.prototype.blankViewpageDiv = function() {
-    	return $([
-        	'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none; height: 95%;">',
-            	'<div class="BRfloatHead">',
-                'Page zoom',
-                '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close(); $(' + "'" + '.BookReader' + "'" + ').resize()"><span class="shift">Close</span></a>',
-            	'</div>',
-        	'</div>'].join('\n')
-    	);
-};
-
-//add buildOSD
-BookReader.prototype.buildOSD = function(id, style, tilesource) {
-	return $([
-	'<div id="' + id + '" allowfullscreen style="' + style + '"></div>',
- 	'<script src="/sites/all/libraries/openseadragon/openseadragon.js"></script>',
-	'<script type="text/javascript">',
-    	'var viewer = OpenSeadragon({',
-		'element: document.getElementById("' + id + '"),',
-		'prefixUrl: "/sites/all/libraries/openseadragon/images/",',
-	    	'homeFillsViewer: false,',
-	    	'showZoomControl: true,',
-		'showNavigator:  false,',
-		'showHomeControl: false,',
-		'showFullPageControl: true,',
-		'showRotationControl: true,',
-		'navigatorPosition: 0,',
-		'navigationControlAnchor: 2,',
-   	 	'sequenceMode: false,',
-		'preserveViewport: true,',
-		'defaultZoomLevel: 0,',
-	    	'constrainDuringPan: false,',
-	    	'visibilityRatio: 1,',
-	    	'minZoomImageRatio: 0.9,',
-		'tileSources: "' + tilesource + '",',
-	'});',
-	'</script>'].join('\n')
-	);
-
-};
 
 //add buildViewpageDiv
 BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 
-	// Remove these legacy elements
-        jViewpageDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
-	// clear content
-        jViewpageDiv.find('.BRfloatMeta').remove();
-	jViewpageDiv.append($("<div class=\"BRfloatMeta\" style=\"text-align: center; background-color: black;\"></div>"));
-
-    	jViewpageDiv.find('.BRfloatMeta').height('inherit');
-//    	jViewpageDiv.find('.BRfloatMeta').width(780);
-	
    	if (1 == this.mode) {
 	      	var hash_arr = this.oldLocationHash.split("/");
 	      	var index = hash_arr[1];
 		if (typeof this.options.pages[index-1] != 'undefined') {
-			tile_source = this.getPageURI(index-1, 1, 0).replace(/full.*/, "info.json");
-			osd_single = this.buildOSD("openseadragon_info", "height: 99%; margin: 2px;", tile_source);
-			jViewpageDiv.find('.BRfloatMeta').html(osd_single);
+			var pid = this.options.pages[index-1].pid;
+			var tilesourceUri = this.getPageURI(index-1, 1, 0).replace(/full.*/, "info.json");
+			var callbackUri = this.options.osdUri.replace('PID', pid)+'/osd_s';
+			$.get(callbackUri,
+		    		function(data) {
+					osd_single = data.replace('[TS]', tilesourceUri);
+					jViewpageDiv.html(osd_single);
+				}
+			);
 		}
     	} else if (3 == this.mode) {
       		var osd = $('<div style="color: white;"><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
-		jViewpageDiv.find('.BRfloatMeta').html(osd);
+		jViewpageDiv.html(osd);
     	} else {
 	      	var indices = this.getSpreadIndices(this.currentIndex());
 		if (typeof this.options.pages[indices[0]] != 'undefined') {
-			osd_left = this.buildOSD("openseadragon_info_l", "height: 99%; width: 49%; display: inline-block; margin: 2px;", this.getPageURI(indices[0], 1, 0).replace(/full.*/, "info.json"));
-			jViewpageDiv.find('.BRfloatMeta').html(osd_left);
+			var osd_id_l = '/osd_l';
+			var left_pid = this.options.pages[indices[0]].pid;
+			var tilesourceUri_left = this.getPageURI(indices[0], 1, 0).replace(/full.*/, "info.json");
 		} else {
-			jViewpageDiv.find('.BRfloatMeta').html('<div id=openseadragon_info_l allowfullscreen style="height: 99%; width: 49%; display: inline-block; margin: 2px;"></div>');
+			
+			var osd_id_l = '/0';
+			var left_pid = '';
+			var tilesourceUri_left = '';
 		}
+		var callbackUri_left = this.options.osdUri.replace('PID', left_pid) + osd_id_l;
 
 		if (typeof this.options.pages[indices[1]] != 'undefined') {
-			osd_right = this.buildOSD("openseadragon_info_r", "height: 99%; width: 49%; display: inline-block; margin: 2px;", this.getPageURI(indices[1], 1, 0).replace(/full.*/, "info.json"));
-			jViewpageDiv.find('.BRfloatMeta').append(osd_right);
+			var osd_id_r = '/osd_r';
+			var right_pid = this.options.pages[indices[1]].pid;
+			var tilesourceUri_right = this.getPageURI(indices[1], 1, 0).replace(/full.*/, "info.json");
 		} else {
-			jViewpageDiv.find('.BRfloatMeta').append('<div id=openseadragon_info_r allowfullscreen style="height: 99%; width: 49%; display: inline-block; margin: 2px;"></div>');
+			var osd_id_r = '/0';
+			var right_pid = '';
+			var tilesourceUri_right = '';
 		}
+		var callbackUri_right = this.options.osdUri.replace('PID', right_pid) + osd_id_r;
 
+		$.get(callbackUri_left,
+	    		function(data) {
+				osd_left = data.replace('[TS]', tilesourceUri_left);
+				jViewpageDiv.find('.viewpLeft').html(osd_left);
+
+			}
+		);
+
+		$.get(callbackUri_right,
+	    		function(data) {
+				osd_right = data.replace('[TS]', tilesourceUri_right);
+				jViewpageDiv.find('.viewpRight').html(osd_right);
+			}
+		);
 	}
 
 };
