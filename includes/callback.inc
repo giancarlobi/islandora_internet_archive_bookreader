@@ -47,6 +47,38 @@ function islandora_internet_archive_bookreader_text_callback(AbstractObject $obj
   drupal_exit();
 }
 
+
+function islandora_internet_archive_bookreader_osd_callback($object_id, $id) {
+
+	echo('<div id='.$id.' allowfullscreen style="height: 100%; width: 100%; display: inline-block;"></div>');
+
+	if ($id == '0'){ drupal_exit();}
+
+ 	echo('<script src="/sites/all/libraries/openseadragon/openseadragon.js"></script>');
+	echo('<script type="text/javascript">');
+    	echo('var viewer = OpenSeadragon({');
+		echo('element: document.getElementById("'.$id.'"),');
+		echo('prefixUrl: "/sites/all/libraries/openseadragon/images/",');
+	    	echo('homeFillsViewer: false,');
+	    	echo('showZoomControl: true,');
+		echo('showNavigator:  false,');
+		echo('showHomeControl: false,');
+		echo('showFullPageControl: true,');
+		echo('showRotationControl: true,');
+		echo('navigatorPosition: 0,');
+		echo('navigationControlAnchor: 2,');
+   	 	echo('sequenceMode: false,');
+		echo('preserveViewport: true,');
+		echo('defaultZoomLevel: 0,');
+	    	echo('constrainDuringPan: false,');
+	    	echo('visibilityRatio: 1,');
+	    	echo('minZoomImageRatio: 0.9,');
+		echo('tileSources: "[TS]",');
+	echo('});');
+	echo('</script>');
+  drupal_exit();
+}
+
 /**
  * Performs a solr search for the given term within the given book.
  *
@@ -73,6 +105,7 @@ function islandora_internet_archive_bookreader_search_callback($object_id, $term
     'hl.tag.pre' => '{{{',
     'hl.tag.post' => '}}}',
     'defType' => 'dismax',
+
   ));
   $results = islandora_internet_archive_bookreader_remap_highlighting_for_bookreader_results($results);
   drupal_json_output($results);
