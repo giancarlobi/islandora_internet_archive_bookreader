@@ -21,8 +21,11 @@ function islandora_internet_archive_bookreader_admin_settings_form(array $form, 
     return isset($form_state['values'][$name]) ? $form_state['values'][$name] : variable_get($name, $default);
   };
   $solr_enabled = module_exists('islandora_solr');
+
+//NEW
+
   $form = array(
-      'islandora_internet_archive_bookreader_imageserver' => array(
+    'islandora_internet_archive_bookreader_imageserver' => array(
       '#type' => 'select',
       '#title' => t('Image Server'),
       '#description' => t('Select the image server to use with Internet Archive BookReader'),
@@ -53,8 +56,9 @@ function islandora_internet_archive_bookreader_admin_settings_form(array $form, 
         '#title' => t('Use the JPG datastream as a backup'),
         '#description' => t('Djatoka will not return JP2s smaller than 4096 bytes; by checking this, the bookreader will run a check and use the JPG datastream instead. NOTE: applying this setting can slow the bookreader down, especially for busy sites or large books. Be sure only to use this if necessary.'),
         '#default_value' => variable_get('islandora_internet_archive_bookreader_use_backup_dsid', FALSE),
-      ),      
+      ),
     ),
+
     'iiif' => array(
       '#type' => 'fieldset',
       '#title' => t('IIIF Image Server Settings'),
@@ -72,14 +76,17 @@ function islandora_internet_archive_bookreader_admin_settings_form(array $form, 
         '#default_value' => variable_get('islandora_internet_archive_bookreader_iiif_url', 'iiif/2'),
         '#description' => t('The location of the IIIF Image Server.'),
       ),
+
       'islandora_internet_archive_bookreader_image_max_width' => array(
       '#type' => 'textfield',
       '#title' => t('IIIF image max width'),
-      '#description' => t('The max width in pixel IIIF will use when creating images (usually set at 800). Set to 0 to enable automatic variable width.'),
+      '#description' => t('The max width in pixel IIIF will use when creating images (usually set at 800).'),
       '#element_validate' => array('element_validate_number'),
       '#default_value' => $get_default_value('islandora_internet_archive_bookreader_image_max_width', '800'),
       ),
+
     ),
+
     'tilesource' => array(
       '#type' => 'fieldset',
       '#title' => t('Internet Archive BookReader Tile Source settings'),
@@ -97,6 +104,7 @@ function islandora_internet_archive_bookreader_admin_settings_form(array $form, 
        '#description' => t('Suffix to compose tile source URL (prefix + PID + suffix).'),
        '#default_value' => variable_get('islandora_internet_archive_bookreader_tile_url_suffix', '/datastreams/JP2/content'),
      ),
+
      'islandora_internet_archive_bookreader_use_token' => array(
        '#type' => 'checkbox',
        '#title' => t('Enable token'),
@@ -104,12 +112,42 @@ function islandora_internet_archive_bookreader_admin_settings_form(array $form, 
        '#default_value' => variable_get('islandora_internet_archive_bookreader_use_token', FALSE),
      ),
     ),
+
     'islandora_internet_archive_bookreader_info_views' => array(
       '#type' => 'textfield',
       '#title' => t('Views to render into Info tab'),
       '#description' => t('Machine name of Views used to fill Info tab. Left empty to use standard metadata.'),
       '#default_value' => variable_get('islandora_internet_archive_bookreader_info_views', ''),
-    ),    
+    ),
+
+
+    'islandora_internet_archive_bookreader_toc_views' => array(
+      '#type' => 'textfield',
+      '#title' => t('Views to render Chapters'),
+      '#description' => t('Machine name of Views used to fill Chapters. Left empty to disable.'),
+      '#default_value' => variable_get('islandora_internet_archive_bookreader_toc_views', ''),
+    ),
+
+    'searchopt' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Search settings'),
+      '#description' => t('<p>These settings will apply to search .</p>'),
+
+     'islandora_internet_archive_bookreader_search_gotofirst' => array(
+       '#type' => 'checkbox',
+       '#title' => t('Go to first result'),
+       '#description' => t('If enabled go to first search result page.'),
+       '#default_value' => variable_get('islandora_internet_archive_bookreader_search_gotofirst', TRUE),
+     ),
+     'islandora_internet_archive_bookreader_search_popup' => array(
+       '#type' => 'checkbox',
+       '#title' => t('Disable popup'),
+       '#description' => t('If selected disable search progress bar.'),
+       '#default_value' => variable_get('islandora_internet_archive_bookreader_search_popup', FALSE),
+     ),
+
+    ),
+
     'islandora_internet_archive_bookreader_ocr_filter_field' => array(
       '#access' => $solr_enabled,
       '#type' => 'textfield',
