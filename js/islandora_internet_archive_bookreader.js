@@ -82,10 +82,10 @@
 		searchUri: settings.islandoraInternetArchiveBookReader.searchUri,
 		pages: settings.islandoraInternetArchiveBookReader.pages,
 		textUri: settings.islandoraInternetArchiveBookReader.textUri,
-
 		IslandoraTOC: settings.islandoraInternetArchiveBookReader.toc,
-
 		osdUri: settings.islandoraInternetArchiveBookReader.osdUri,
+		goToFirstResult: settings.islandoraInternetArchiveBookReader.goToFirstResult,
+		disSearchPopup: settings.islandoraInternetArchiveBookReader.disSearchPopup,
 
 	});
 	BookReader.prototype.setup = (function (super_) {
@@ -102,10 +102,10 @@
 			this.searchUri = options.searchUri;
 			this.pages = options.pages;
 			this.textUri = options.textUri;
-
 			this.IslandoraTOC = options.IslandoraTOC;
-
 			this.osdUri = options.osdUri;
+			this.goToFirstResult = options.goToFirstResult;
+			this.disSearchPopup = options.disSearchPopup;
     		};
 	})(BookReader.prototype.setup);
 
@@ -277,16 +277,14 @@ BookReader.prototype.search = function(term, options) {
 
     	options = options !== undefined ? options : {};
     	var defaultOptions = {
-
-		//§ ToDo: goToFirstResult and disablePopup as options in admin panel
-
-		// {bool} (default=false) goToFirstResult - jump to the first result
-		goToFirstResult: true,
-		// {bool} (default=false) disablePopup - don't show the modal progress
+		goToFirstResult: false,
 		disablePopup: false,
 		error: br.BRSearchCallbackErrorDesktop,
 		success: br.BRSearchCallback,
     	};
+	if (br.goToFirstResult >0) { defaultOptions['goToFirstResult']= true;};
+	if (br.disSearchPopup >0) { defaultOptions['disablePopup']= true;};
+
     	options = jQuery.extend({}, defaultOptions, options);
 	$('.textSrch').blur(); //cause mobile safari to hide the keyboard
     	this.removeSearchResults();
@@ -524,14 +522,14 @@ BookReader.prototype.initToolbar = (function (super_) {
 				onOpen: function() {
 					if (1 == self.mode) {
 					      	var osd_single_loading = $([
-					      		'<div class="textTop" style="font-size: 1.1em; color: white; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
+					      		'<div class="textTop loader" style="font-size: 1.1em; color: white; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
 					      		'</div>'].join('\n'));
 					      	$('#BRviewpage').html(osd_single_loading);
 					} else if (2 == self.mode) {
 					      	var osd_double_loading = $([
-						 	'<div class="viewpLeft" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
+						 	'<div class="viewpLeft loader" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
 							'LOADING...</div>',
-						 	'<div class="viewpRight" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
+						 	'<div class="viewpRight loader" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
 							'LOADING...</div>'].join('\n'));
 					      	$('#BRviewpage').html(osd_double_loading);
 					};
@@ -609,7 +607,7 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 	    		function(data) {
 				osd_left = data.replace('[TS]', tilesourceUri_left);
 				jViewpageDiv.find('.viewpLeft').html(osd_left);
-
+				jViewpageDiv.find('.viewpLeft').removeClass('loader');
 			}
 		);
 
@@ -617,10 +615,10 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 	    		function(data) {
 				osd_right = data.replace('[TS]', tilesourceUri_right);
 				jViewpageDiv.find('.viewpRight').html(osd_right);
+				jViewpageDiv.find('.viewpRight').removeClass('loader');
 			}
 		);
 	}
-
 };
 
 /**
