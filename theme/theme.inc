@@ -61,18 +61,13 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
       'mobilize' => variable_get('islandora_internet_archive_bookreader_mobile_full_screen', FALSE),
       'content_type' => variable_get('islandora_internet_archive_bookreader_content_type', 'book'),
       'useBackupUri' => $backup_uris,
-
 	'iiifUri' => $iiifServerBaseURL,
         'image_max_width' => $image_max_width,
         'imageServer' => $imageServer,
-
 	'toc' => theme('islandora_internet_archive_bookreader_book_toc', array('object' => $object)),
-//	'toc' => theme('islandora_internet_archive_bookreader_book_toc'),
-//	'toc' => '{pagenum: "3", level: 1, label: "CHAPTER I", type: "1", title: "FIRST"}',
-
-      'osdUri' => url('internet_archive_bookreader_osd/PID', array('absolute' => TRUE)),
-
-
+	'osdUri' => url('internet_archive_bookreader_osd/PID', array('absolute' => TRUE)),
+	'goToFirstResult' => variable_get('islandora_internet_archive_bookreader_search_gotofirst', TRUE),
+	'disSearchPopup' => variable_get('islandora_internet_archive_bookreader_search_popup', FALSE),
     ),
   );
 
@@ -352,7 +347,7 @@ function theme_islandora_internet_archive_bookreader_book_toc(array $variables) 
 
         //--Name of Views
         // hardcoded, we need a variable into admin panel
-	$tocTab_views = variable_get('islandora_internet_archive_bookreader_toc_views', 'bookreader_toc_tab');
+	$tocTab_views = variable_get('islandora_internet_archive_bookreader_toc_views', '');
   	
 	$object = $variables['object'];
 
