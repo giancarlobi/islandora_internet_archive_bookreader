@@ -31,6 +31,8 @@
  step 6.1: SEARCH makeup tooltip position and text
  
  Step 7.0: ZoomPage (aka Page view): using callback, lazyload, makeup
+ 
+ Step 8.0: Add admin settings for Search and Toc, makeup osd loading
 
 
 
