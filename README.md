@@ -35,6 +35,8 @@
  Step 8.0: Add admin settings for Search and Toc, makeup osd loading
  
  Step 9.0: Restyling Fulltext colorbox and lazyloading
+ 
+ Step 9.1: Custom CSS optimized and moved style from js to css file
 
 
 
