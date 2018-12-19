@@ -33,6 +33,8 @@
  Step 7.0: ZoomPage (aka Page view): using callback, lazyload, makeup
  
  Step 8.0: Add admin settings for Search and Toc, makeup osd loading
+ 
+ Step 9.0: Restyling Fulltext colorbox and lazyloading
 
 
 
