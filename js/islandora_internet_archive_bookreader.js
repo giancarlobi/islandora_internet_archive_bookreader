@@ -374,9 +374,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
           	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
 	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
           		+ "</span>");
-		$('<div style="display: none;"></div>').append(
-		'<div class="BRfloat" id="BRfulltext"  style="width: inherit; max-width: 98%; height: 98%; text-align: left; background-color: white; vertical-align:top; padding: 3%; margin: 1%;"></div>'
-		).appendTo($('body'));
+		$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRfulltext"></div>').appendTo($('body'));
         	return $el;
     	};
 })(BookReader.prototype.buildToolbarElement);
@@ -385,9 +383,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
 BookReader.prototype.initToolbar = (function (super_) {
     	return function (mode, ui) {
         	super_.apply(this, arguments);
-
 		var self = this;
-
 		this.refs.$BRtoolbar.find('.fulltext').colorbox({
 			inline: true,
 			opacity: "0.5",
@@ -398,21 +394,12 @@ BookReader.prototype.initToolbar = (function (super_) {
 			scrolling: true,
 			onOpen: function() {
 				if (1 == self.mode) {
-				      	var text_single_loading = $([
-				      		'<div class="textTop loader" style="font-size: 1.1em; color: black; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
-				      		'</div>'].join('\n'));
-				      	$('#BRfulltext').html(text_single_loading);
+				      	$('#BRfulltext').html('<div class="textTop loader">LOADING...</div>');
 				} else if (2 == self.mode) {
-				      	var text_double_loading = $([
-					 	'<div class="textLeft loader" style="font-size: 1.1em; color: black; height: 100%; width: 49%; display: inline-block; vertical-align:top; overflow: auto; padding: 1%;">',
-						'LOADING...</div>',
-					 	'<div class="textRight loader" style="font-size: 1.1em; color: black; height: 100%; width: 49%; display: inline-block; vertical-align:top; overflow: auto; padding: 1%;">',
-						'LOADING...</div>'].join('\n'));
-				      	$('#BRfulltext').html(text_double_loading);
+				      	$('#BRfulltext').html('<div class="textLeft loader">LOADING...</div><div class="textRight loader">LOADING...</div>');
 				};
 			},
 			onLoad: function() {
-
 			    	self.trigger('stop');
 			},
 			onComplete: function() {
@@ -490,9 +477,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
 			//hide zoom controls
 			$el.find('.BRtoolbarSectionZoom').remove();
 			//set div class to render osd
-			$('<div style="display: none;"></div>').append(
-			'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: 97%; height: 97%; margin: 1%; text-align: center;"></div>'
-			).appendTo($('body'));
+			$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRviewpage"></div>').appendTo($('body'));
 		};
         	return $el;
     	};
@@ -513,17 +498,9 @@ BookReader.prototype.initToolbar = (function (super_) {
 				fastIframe: false,
 				onOpen: function() {
 					if (1 == self.mode) {
-					      	var osd_single_loading = $([
-					      		'<div class="textTop loader" style="font-size: 1.1em; color: white; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
-					      		'</div>'].join('\n'));
-					      	$('#BRviewpage').html(osd_single_loading);
+					      	$('#BRviewpage').html('<div class="textTop loader">LOADING...');
 					} else if (2 == self.mode) {
-					      	var osd_double_loading = $([
-						 	'<div class="viewpLeft loader" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
-							'LOADING...</div>',
-						 	'<div class="viewpRight loader" style="font-size: 1.1em; color: white; height: 100%; width: 49%; display: inline-block;">',
-							'LOADING...</div>'].join('\n'));
-					      	$('#BRviewpage').html(osd_double_loading);
+					      	$('#BRviewpage').html('<div class="viewpLeft loader">LOADING...</div><div class="viewpRight loader">LOADING...</div>');
 					};
 				},
 				onLoad: function() {
