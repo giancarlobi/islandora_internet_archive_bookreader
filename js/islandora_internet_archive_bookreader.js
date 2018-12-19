@@ -374,6 +374,9 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
           	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
 	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
           		+ "</span>");
+		$('<div style="display: none;"></div>').append(
+		'<div class="BRfloat" id="BRfulltext"  style="width: inherit; max-width: 98%; height: 98%; text-align: left; background-color: white; vertical-align:top; padding: 3%; margin: 1%;"></div>'
+		).appendTo($('body'));
         	return $el;
     	};
 })(BookReader.prototype.buildToolbarElement);
@@ -389,67 +392,54 @@ BookReader.prototype.initToolbar = (function (super_) {
 			inline: true,
 			opacity: "0.5",
 			href: "#BRfulltext",
+			width: "80%",
+			height: "80%",
+			fastIframe: false,
+			scrolling: true,
+			onOpen: function() {
+				if (1 == self.mode) {
+				      	var text_single_loading = $([
+				      		'<div class="textTop loader" style="font-size: 1.1em; color: black; height: 100%; width: 100%; display: inline-block;"><p>LOADING...</p>',
+				      		'</div>'].join('\n'));
+				      	$('#BRfulltext').html(text_single_loading);
+				} else if (2 == self.mode) {
+				      	var text_double_loading = $([
+					 	'<div class="textLeft loader" style="font-size: 1.1em; color: black; height: 100%; width: 49%; display: inline-block; vertical-align:top; overflow: auto; padding: 1%;">',
+						'LOADING...</div>',
+					 	'<div class="textRight loader" style="font-size: 1.1em; color: black; height: 100%; width: 49%; display: inline-block; vertical-align:top; overflow: auto; padding: 1%;">',
+						'LOADING...</div>'].join('\n'));
+				      	$('#BRfulltext').html(text_double_loading);
+				};
+			},
 			onLoad: function() {
+
 			    	self.trigger('stop');
+			},
+			onComplete: function() {
 				self.buildFulltextDiv($('#BRfulltext'));
-			}
+			},
 		});
-		$('<div style="display: none;"></div>').append(
-        		self.blankFulltextDiv()
-		).appendTo($('body'));
    	};
 })(BookReader.prototype.initToolbar);
 
-//add blankFulltextDiv
-BookReader.prototype.blankFulltextDiv = function() {
-    	return $([
-        	'<div class="BRfloat" id="BRfulltext">',
-            	'<div class="BRfloatHead">',
-                'Full text',
-                '<button class="floatShut" href="javascript:;" onclick="$.fn.colorbox.close();"><span class="shift">Close</span></a>',
-            	'</div>',
-        	'</div>'].join('\n')
-    	);
-};
-
 //add buildFulltextDiv
 BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
-
-	// Remove these legacy elements
-        jFulltextDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
-	// clear content
-        jFulltextDiv.find('.BRfloatMeta').remove();
-	jFulltextDiv.append($("<div class=\"BRfloatMeta\"></div>"));
-
-    	jFulltextDiv.find('.BRfloatMeta').height(600);
-    	jFulltextDiv.find('.BRfloatMeta').width(780);
-
    	if (1 == this.mode) {
-	      	var onePageText = $([
-	      		'<div class="textTop" style="font-size: 1.1em"><p>Page loading...</p>',
-	      		'</div>'].join('\n'));
-	      	jFulltextDiv.find('.BRfloatMeta').html(onePageText);
-
 	      	var hash_arr = this.oldLocationHash.split("/");
 	      	var index = hash_arr[1];
 		if (typeof this.options.pages[index-1] != 'undefined') {
 			var pid = this.options.pages[index-1].pid;
 		}
-	      	$.get(this.options.textUri.replace('PID', pid),
-		    	function(data) {
-		        	jFulltextDiv.find('.BRfloatMeta').html("<img src=\"/islandora/object/" 
-				+ pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + index + "</strong><HR>" + data);
+		$.get(this.options.textUri.replace('PID', pid),
+	    		function(data) {
+				text_single = "<img src=\"/islandora/object/" + pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + index + "</strong><HR>" + data;
+				jFulltextDiv.html(text_single);
 			}
 		);
     	} else if (3 == this.mode) {
-      		jFulltextDiv.find('.BRfloatMeta').html('<div><strong>' + Drupal.t('Full text not supported for this view.') + '</strong></div>');
+      		var text_no = $('<div style="color: black;"><strong>' + Drupal.t('Full text not supported for this view.') + '</strong></div>');
+		jFulltextDiv.html(text_no);
     	} else {
-	      	var twoPageText = $([
-	      		'<div class="textTop" style="font-size: 1.1em">',
-		 	'<div class="textLeft" style="padding: 10px"><p>Left page loading...</p></div>',
-		 	'<div class="textRight" style="padding: 10px"><p>Right page loading...</p></div>',
-	      		'</div>'].join('\n'));
-	      	jFulltextDiv.find('.BRfloatMeta').html(twoPageText);
 	      	var indices = this.getSpreadIndices(this.currentIndex());
 		if (typeof this.options.pages[indices[0]] != 'undefined') {
 			var left_pid = this.options.pages[indices[0]].pid;
@@ -460,25 +450,27 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 	      	if(left_pid) {
 			$.get(this.options.textUri.replace('PID', left_pid),
 		      		function(data) {
-		        		jFulltextDiv.find('.textLeft').html("<img src=\"/islandora/object/" 
-					+ left_pid + "/datastream/TN\" height=\"100\"><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
+					jFulltextDiv.find('.textLeft').html("<img src=\"/islandora/object/" + left_pid + "/datastream/TN\" height=\"100\" ><br><strong>Page " + (indices[0]+1) + "</strong><HR>" + data);
+					jFulltextDiv.find('.textLeft').removeClass('loader');
 		      		}
 			);
 	      	} else {
 			jFulltextDiv.find('.textLeft').html("<HR>");
+			jFulltextDiv.find('.textLeft').removeClass('loader');
 		}
 	      	if(right_pid) {
 			$.get(this.options.textUri.replace('PID', right_pid),
 		      		function(data) {
-		        		jFulltextDiv.find('.textRight').html("<img src=\"/islandora/object/" 
-					+ right_pid + "/datastream/TN\" height=\"100\" ><br><strong>Page " + (indices[1]+1) + "</strong><HR>" + data);
+					jFulltextDiv.find('.textRight').html("<img src=\"/islandora/object/" + right_pid + "/datastream/TN\" height=\"100\" ><br><strong>Page " + (indices[1]+1) + "</strong><HR>" + data);
+					jFulltextDiv.find('.textRight').removeClass('loader');
 		      		}
 			);
 	      	} else {
 		        jFulltextDiv.find('.textRight').html("<HR>");
+			jFulltextDiv.find('.textRight').removeClass('loader');
 		}
 	}
-}
+};
 
 
 /**
@@ -499,7 +491,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
 			$el.find('.BRtoolbarSectionZoom').remove();
 			//set div class to render osd
 			$('<div style="display: none;"></div>').append(
-			'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: none; height: 99%; text-align: center; background-color: black;"></div>'
+			'<div class="BRfloat" id="BRviewpage"  style="width: inherit; max-width: 97%; height: 97%; margin: 1%; text-align: center;"></div>'
 			).appendTo($('body'));
 		};
         	return $el;
