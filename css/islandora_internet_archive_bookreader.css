@@ -5,11 +5,21 @@ div#book-viewer {
 
 
 div#BookReader {
-  background-color: #ccc;
+  background-color: #fffffd;
   margin: 0;
   padding: 0;
   height: 100%;
 }
+
+span.BRtoolbarSection, span.BRtoolbarbuttons, div#BRnav {
+  background-color: #e6e6e6;
+}
+
+/* hide title from navbar but show when fullscreen*/
+span#BRreturn {
+        display: none;
+}
+
 
 /* Fullscreen rules */
 div#BookReader.fullscreenActive {
@@ -34,6 +44,10 @@ body.BRfullscreenActive {
 }
 body.BRfullscreenActive .mm-menu {
   z-index: 1999;
+}
+
+span#BRreturn.fullscreenActive {
+        display: block;
 }
 
 /* to avoid overflow icon on the bottom right side */
