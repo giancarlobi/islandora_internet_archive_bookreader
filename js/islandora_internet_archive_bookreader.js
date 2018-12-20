@@ -174,6 +174,29 @@ BookReader.prototype.getImageserverUri = function(resource_uri, reduce, rotate) 
         }
 };
 
+// override setupTooltips()
+// to avoid overflow text on top of navbar
+BookReader.prototype.setupTooltips = function() {
+    $('.js-tooltip').bt(
+      {
+        positions: ['bottom'],
+        shrinkToFit: true,
+	padding: '2px',
+        spikeGirth: 0,
+        spikeLength: 0,
+//        fill: '#4A90E2',
+	fill: 'rgba(255,255,255,0.8)',
+        cornerRadius: 0,
+        strokeWidth: 0,
+        cssStyles: {
+          color: '#4A90E2',
+          fontSize: '1.25em',
+          whiteSpace: 'nowrap'
+        },
+      }
+    );
+};
+
 /**
 //§§ Info DIV
 **/
@@ -196,7 +219,7 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
         	var $el = super_.call(this);
           	var readIcon = '';
           	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection BRtoolbarSectionFullscreen tc ph20 first'>"
-	  		+ "<button class='BRicon full'></button>"
+	  		+ "<button class='BRicon full js-tooltip'></button>"
           		+ "</span>");
         	return $el;
     	};
