@@ -7,9 +7,11 @@
     attach: function(context, settings) {
       $('.islandora-internet-archive-bookreader', context).once('islandora-bookreader', function () {
 
+	// If mobile device onePage fit width
+	var onePage_autofit = ($.browser.mobile ? 'width' : 'auto');
+
 	//§§ Set options
 	var options = {
-
 		getPageWidth: function(index) {
 			if (index >= 0) {
 				return parseInt(settings.islandoraInternetArchiveBookReader.pages[index].width);
@@ -18,7 +20,6 @@
 				return null;
 			}
 		},
-
   		getPageHeight: function(index) {
   			if (index >= 0) {
 				return parseInt(settings.islandoraInternetArchiveBookReader.pages[index].height);
@@ -27,16 +28,12 @@
 				return null;
 			}
 		},
-
 		getPageNum: function(index) {
     			return index + 1;
 		},
-
   		leafNumToIndex: function(leafNum) {
   			return leafNum - 1;
 		},
-
-
   		getPageURI: function(index, reduce, rotate) {
 		    	if (typeof settings.islandoraInternetArchiveBookReader.pages[index] != 'undefined') {
 		      		if ((settings.islandoraInternetArchiveBookReader.imageServer == 'djatoka') && (settings.islandoraInternetArchiveBookReader.useBackupUri == true)) {
@@ -58,11 +55,11 @@
 		      		}
 		    	}
   		},
-
 		ui: 'full', // full, embed, responsive
 		showLogo: false,
 		bookTitle: settings.islandoraInternetArchiveBookReader.label.substring(0,97) + '...',
   		bookUrl: document.location.toString(),
+		onePage: { autofit: onePage_autofit, },
 		imagesBaseURL: settings.islandoraInternetArchiveBookReader.imagesFolderUri,
 		el: '#BookReader',
 		pageProgression: settings.islandoraInternetArchiveBookReader.pageProgression,
@@ -112,16 +109,6 @@
 	//§§ Initialize and Render the BookReader.
         var bookReader = new BookReader(options);
         bookReader.init();
-
-      	// to avoid overflow icon on the bottom right side
-      	$('div#BRpage').css({
-        	'width': 'auto'
-      	});
-
-	// to avoid overflow search button on the top right side
-      	$('.textSrch').css({
-        	'min-width': '10em'
-      	});
 
 	// If mobile device and mobilize the force fullscreen and mode 1
         if ($.browser.mobile && settings.islandoraInternetArchiveBookReader.mobilize) {
@@ -226,22 +213,12 @@ BookReader.prototype.initToolbar = (function (super_) {
 		this.refs.$BRtoolbar.find('.full').bind('click', function() {
     	   		self.fullscreen = (self.fullscreen ? false : true);
 		    	if(self.fullscreen) {
-		      		self.refs.$br.css({
-					'position': 'fixed',
-					'width': '100%',
-					'height': '100%',
-					'left': '0',
-					'top': '0',
-					'z-index': '700',
-					'height': '100%'
-		      		});
+				$('body').addClass('BRfullscreenActive');
+				self.refs.$br.addClass('fullscreenActive');
 		  	}
 		    	else {
-		      		self.refs.$br.css({
-					'position': 'relative',
-					'z-index': '0',
-					'height': ''
-		      		});
+				$('body').removeClass('BRfullscreenActive');
+				self.refs.$br.removeClass('fullscreenActive');
 			}
 			self.resize();
   		});
@@ -251,17 +228,8 @@ BookReader.prototype.initToolbar = (function (super_) {
 // Go Fullscreen regardless of current state.
 BookReader.prototype.goFullScreen = function() {
     	this.fullscreen = true;
-      	this.refs.$br.css({
-		'position': 'fixed',
-		'width': '100%',
-		'height': '100%',
-		'left': '0',
-		'top': '0',
-		'margin': '0',
-		'padding': '0',
-		'z-index': '1',
-		'height': '100%',
-      	});
+	this.refs.$br.addClass('fullscreenActive');
+	$('body').addClass('BRfullscreenActive');
       	this.resize();
 }
 
@@ -545,7 +513,7 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 			);
 		}
     	} else if (3 == this.mode) {
-      		var osd = $('<div style="color: white;"><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
+      		var osd = $('<div style="color: black;"><strong>' + Drupal.t('View page not supported for this view.') + '</strong></div>');
 		jViewpageDiv.html(osd);
     	} else {
 	      	var indices = this.getSpreadIndices(this.currentIndex());
