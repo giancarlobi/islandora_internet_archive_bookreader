@@ -39,6 +39,8 @@
  Step 9.1: Custom CSS optimized and moved style from js to css file
  
  Step 9.2: Fulltext logic moved to CSS and class. Makeup mobile rendering.
+ 
+ Step 9.3: Navbar tooltip makeup
 
 
 
