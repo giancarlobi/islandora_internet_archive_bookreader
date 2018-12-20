@@ -41,6 +41,8 @@
  Step 9.2: Fulltext logic moved to CSS and class. Makeup mobile rendering.
  
  Step 9.3: Navbar tooltip makeup
+ 
+ Step 9.4: Title on fullscreen, bars makeup
 
 
 
