@@ -209,52 +209,6 @@ BookReader.prototype.buildInfoDiv = function(jInfoDiv) {
 
 
 
-/**
-//§§ Fullscreen
-**/
-
-// Extend buildToolbarElement: add fullscreen button
-BookReader.prototype.buildToolbarElement = (function (super_) {
-    	return function () {
-        	var $el = super_.call(this);
-          	var readIcon = '';
-          	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection BRtoolbarSectionFullscreen tc ph20 first'>"
-	  		+ "<button class='BRicon full js-tooltip'></button>"
-          		+ "</span>");
-        	return $el;
-    	};
-})(BookReader.prototype.buildToolbarElement);
-
-// Extend initToolbar: add fullscreen button click code
-BookReader.prototype.initToolbar = (function (super_) {
-    	return function (mode, ui) {
-        	super_.apply(this, arguments);
-		if (ui == 'embed') {
-            		return;
-        	}
-		var self = this;
-		this.refs.$BRtoolbar.find('.full').bind('click', function() {
-    	   		self.fullscreen = (self.fullscreen ? false : true);
-		    	if(self.fullscreen) {
-				$('body').addClass('BRfullscreenActive');
-				self.refs.$br.addClass('fullscreenActive');
-		  	}
-		    	else {
-				$('body').removeClass('BRfullscreenActive');
-				self.refs.$br.removeClass('fullscreenActive');
-			}
-			self.resize();
-  		});
-   	};
-})(BookReader.prototype.initToolbar);
-
-// Go Fullscreen regardless of current state.
-BookReader.prototype.goFullScreen = function() {
-    	this.fullscreen = true;
-	this.refs.$br.addClass('fullscreenActive');
-	$('body').addClass('BRfullscreenActive');
-      	this.resize();
-}
 
 /**
 //§§ Search
@@ -362,8 +316,9 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
     	return function () {
         	var $el = super_.call(this);
           	var readIcon = '';
-          	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
-	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
+          	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection tc ph20'>"
+//	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
+			+ "<button class='BRtext fulltext'><span style=\"font-weight: bolder;\">TEXT</span></button>"
           		+ "</span>");
 		$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRfulltext"></div>').appendTo($('body'));
         	return $el;
@@ -462,8 +417,9 @@ BookReader.prototype.buildToolbarElement = (function (super_) {
         	var $el = super_.call(this);
           	var readIcon = '';
 		if (this.imageServer == 'iiif') {
-		  	$el.find('.BRtoolbarLeft').append("<span class='BRtoolbarSection tc ph20'>"
-		  		+ "<button class='BRtext zoomPage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
+		  	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection tc ph20'>"
+//		  		+ "<button class='BRtext zoomPage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
+		  		+ "<button class='BRtext zoomPage'><span style=\"font-weight: bolder;\">ZOOM</span></button>"
 		  		+ "</span>");
 			//hide zoom controls
 			$el.find('.BRtoolbarSectionZoom').remove();
@@ -580,6 +536,61 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 		);
 	}
 };
+
+
+
+
+/**
+//§§ Fullscreen
+**/
+
+// Extend buildToolbarElement: add fullscreen button
+BookReader.prototype.buildToolbarElement = (function (super_) {
+    	return function () {
+        	var $el = super_.call(this);
+          	var readIcon = '';
+          	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection BRtoolbarSectionFullscreen tc ph20 first'>"
+	  		+ "<button class='BRicon full js-tooltip'></button>"
+          		+ "</span>");
+        	return $el;
+    	};
+})(BookReader.prototype.buildToolbarElement);
+
+// Extend initToolbar: add fullscreen button click code
+BookReader.prototype.initToolbar = (function (super_) {
+    	return function (mode, ui) {
+        	super_.apply(this, arguments);
+		if (ui == 'embed') {
+            		return;
+        	}
+		var self = this;
+		this.refs.$BRtoolbar.find('.full').bind('click', function() {
+    	   		self.fullscreen = (self.fullscreen ? false : true);
+		    	if(self.fullscreen) {
+				$('body').addClass('BRfullscreenActive');
+				self.refs.$br.addClass('fullscreenActive');
+				self.refs.$br.find('#BRreturn').addClass('fullscreenActive');
+		  	}
+		    	else {
+				$('body').removeClass('BRfullscreenActive');
+				self.refs.$br.removeClass('fullscreenActive');
+				self.refs.$br.find('#BRreturn').removeClass('fullscreenActive');
+			}
+			self.resize();
+  		});
+   	};
+})(BookReader.prototype.initToolbar);
+
+// Go Fullscreen regardless of current state.
+BookReader.prototype.goFullScreen = function() {
+    	this.fullscreen = true;
+	this.refs.$br.addClass('fullscreenActive');
+	$('body').addClass('BRfullscreenActive');
+      	this.resize();
+}
+
+
+
 
 /**
 //§§ Chapters
