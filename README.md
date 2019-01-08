@@ -43,6 +43,8 @@
  Step 9.3: Navbar tooltip makeup
  
  Step 9.4: Title on fullscreen, bars makeup
+ 
+ Step 9.5: Add option to switch to fullscreen on open if URL query parameter fs=1
 
 
 
