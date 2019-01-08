@@ -117,6 +117,10 @@
 	  		bookReader.switchMode(1);
 		}
         }
+	// If gotoFullscreen (?fs=1) force fullscreen
+        else if (settings.islandoraInternetArchiveBookReader.gotoFullscreen) {
+		bookReader.goFullScreen();
+        } 
       });
     }
   };
