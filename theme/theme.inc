@@ -68,6 +68,7 @@ function template_preprocess_islandora_internet_archive_bookreader(array &$varia
 	'osdUri' => url('internet_archive_bookreader_osd/PID', array('absolute' => TRUE)),
 	'goToFirstResult' => variable_get('islandora_internet_archive_bookreader_search_gotofirst', TRUE),
 	'disSearchPopup' => variable_get('islandora_internet_archive_bookreader_search_popup', FALSE),
+	'gotoFullscreen' => ($_GET['fs'] == 1) ? TRUE : FALSE,
     ),
   );
 
