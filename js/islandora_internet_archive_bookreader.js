@@ -57,8 +57,9 @@
   		},
 		ui: 'full', // full, embed, responsive
 		showLogo: false,
-		bookTitle: settings.islandoraInternetArchiveBookReader.label.substring(0,97) + '...',
+		bookTitle: settings.islandoraInternetArchiveBookReader.label.substring(0,97) + ' ...',
   		bookUrl: document.location.toString(),
+		enableBookTitleLink: false,
 		onePage: { autofit: onePage_autofit, },
 		imagesBaseURL: settings.islandoraInternetArchiveBookReader.imagesFolderUri,
 		el: '#BookReader',
@@ -83,7 +84,6 @@
 		osdUri: settings.islandoraInternetArchiveBookReader.osdUri,
 		goToFirstResult: settings.islandoraInternetArchiveBookReader.goToFirstResult,
 		disSearchPopup: settings.islandoraInternetArchiveBookReader.disSearchPopup,
-
 	});
 	BookReader.prototype.setup = (function (super_) {
     		return function (options) {
@@ -95,7 +95,6 @@
 			this.image_max_width = options.image_max_width;
 			this.djatokaUri = options.djatokaUri;
 			this.compression = options.compression;
-			this.fullscreen = false;
 			this.searchUri = options.searchUri;
 			this.pages = options.pages;
 			this.textUri = options.textUri;
@@ -113,18 +112,35 @@
 	// If mobile device and mobilize the force fullscreen and mode 1
         if ($.browser.mobile && settings.islandoraInternetArchiveBookReader.mobilize) {
         	if ($.browser.mobile) {
-          		bookReader.goFullScreen();
+          		bookReader.enterFullscreen();
 	  		bookReader.switchMode(1);
 		}
-        }
-	// If gotoFullscreen (?fs=1) force fullscreen
-        else if (settings.islandoraInternetArchiveBookReader.gotoFullscreen) {
-		bookReader.goFullScreen();
         } 
+	// If gotoFullscreen (?fs=1) enter fullscreen
+        else if (settings.islandoraInternetArchiveBookReader.gotoFullscreen) {
+		bookReader.enterFullscreen();
+        }
       });
     }
   };
 })(jQuery);
+
+// override setupTooltips()
+// to enable system tooltip
+
+BookReader.prototype.setupTooltips = function() {
+};
+
+
+// Extend initNavbar: hide fullscreen when mobile
+BookReader.prototype.initNavbar = (function (super_) {
+    	return function () {
+        	var $el = super_.call(this);
+		$el.find('.full').addClass("desktop-only");
+        	return $el;
+    	};
+})(BookReader.prototype.initNavbar);
+
 
   /**
    * Gets the IIIF/Djatoka URI.
@@ -178,28 +194,6 @@ BookReader.prototype.getImageserverUri = function(resource_uri, reduce, rotate) 
         }
 };
 
-// override setupTooltips()
-// to avoid overflow text on top of navbar
-BookReader.prototype.setupTooltips = function() {
-    $('.js-tooltip').bt(
-      {
-        positions: ['bottom'],
-        shrinkToFit: true,
-	padding: '2px',
-        spikeGirth: 0,
-        spikeLength: 0,
-//        fill: '#4A90E2',
-	fill: 'rgba(255,255,255,0.8)',
-        cornerRadius: 0,
-        strokeWidth: 0,
-        cssStyles: {
-          color: '#4A90E2',
-          fontSize: '1.25em',
-          whiteSpace: 'nowrap'
-        },
-      }
-    );
-};
 
 /**
 //§§ Info DIV
@@ -210,8 +204,6 @@ BookReader.prototype.buildInfoDiv = function(jInfoDiv) {
       	jInfoDiv.find('.BRfloatBody, .BRfloatCover, .BRfloatFoot').remove();
 	jInfoDiv.append(this.IslandoraInfoDIV);
 }
-
-
 
 
 /**
@@ -266,8 +258,8 @@ BookReader.prototype.search = function(term, options) {
                 		br.BRSearchCallback(data, options);
 				
 				//§ makeup tooltip position
-				$('div#BRnavline div.search').bt({
-					contentSelector: '$(this).find(".query")',
+				$('.BRnavline .BRsearch').bt({
+					contentSelector: '$(this).find(".BRquery")',
 					trigger: 'hover',
 					closeWhenOthersOpen: true,
 					cssStyles: {
@@ -275,22 +267,21 @@ BookReader.prototype.search = function(term, options) {
 					    	backgroundColor: '#fff',
 					    	border: '4px solid rgb(216,216,216)',
 					    	color: 'rgb(52,52,52)',
+						//§
 						fontSize: '13px',
-						top: '-30px'
+						left: '160px'
+						//§
 					},
-					shrinkToFit: true,
-					width: '230px',
+					shrinkToFit: false,
+					width: '300px',
 					padding: 0,
 					spikeGirth: 0,
 					spikeLength: 0,
 					overlap: '0px',
 					overlay: false,
-					killTitle: true,
-					textzIndex: 9999,
-					boxzIndex: 9998,
-					wrapperzIndex: 9997,
+					killTitle: false,
 					offsetParent: null,
-					positions: ['right'],
+					positions: ['top'],
 					fill: 'white',
 					windowMargin: 10,
 					strokeWidth: 0,
@@ -298,10 +289,6 @@ BookReader.prototype.search = function(term, options) {
 					centerPointX: 0,
 					centerPointY: 0,
 					shadow: false
-				});
-				//§ makeup tooltip text
-				$("div#BRnavline div.search div.query span").text(function(index, text) {
-				    	return text.replace("Page", " Page");
 				});
             		}
         	},
@@ -311,23 +298,39 @@ BookReader.prototype.search = function(term, options) {
     	});
 };
 
+
 /**
-//§§ Fulltext
+//§§ Fulltext & ZoomPage 
 **/
 
-// Extend buildToolbarElement: add fulltext button 
+// Extend buildToolbarElement: add Fulltext and ZoomPage button
 BookReader.prototype.buildToolbarElement = (function (super_) {
     	return function () {
         	var $el = super_.call(this);
           	var readIcon = '';
-          	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection tc ph20'>"
-//	  		+ "<button class='BRtext fulltext'><span class=\"hide-md\" style=\"font-weight: bolder;\">TEXT</span></button>"
-			+ "<button class='BRtext fulltext'><span style=\"font-weight: bolder;\">TEXT</span></button>"
-          		+ "</span>");
-		$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRfulltext"></div>').appendTo($('body'));
+		if (this.imageServer == 'iiif') {
+		  	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection Islandora'>"
+				+ "<button class='BRpill fulltext js-tooltip' title='Show fulltext'>TEXT</button>"
+		  		+ "<button class='BRpill zoomPage js-tooltip' title='Fine zoom'>ZOOM</button>"
+		  		+ "</span>");
+			//set div class to render fulltext
+			$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRfulltext"></div>').appendTo($('body'));
+			//set div class to render osd
+			$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRviewpage"></div>').appendTo($('body'));
+		} else {
+		  	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection Islandora'>"
+				+ "<button class='BRpill fulltext js-tooltip' title='Show fulltext'>TEXT</button>"
+		  		+ "</span>");
+			$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRfulltext"></div>').appendTo($('body'));
+		};
         	return $el;
     	};
 })(BookReader.prototype.buildToolbarElement);
+
+
+/**
+//§§ Fulltext
+**/
 
 // Extend initToolbar: add fulltext button click code
 BookReader.prototype.initToolbar = (function (super_) {
@@ -344,9 +347,9 @@ BookReader.prototype.initToolbar = (function (super_) {
 			scrolling: true,
 			onOpen: function() {
 				if (1 == self.mode) {
-				      	$('#BRfulltext').html('<div class="textTop loader">LOADING...</div>');
+				      	$('#BRfulltext').html('<div class="textTop loader"></div>');
 				} else if (2 == self.mode) {
-				      	$('#BRfulltext').html('<div class="textLeft loader">LOADING...</div><div class="textRight loader">LOADING...</div>');
+				      	$('#BRfulltext').html('<div class="textLeft loader"></div><div class="textRight loader"></div>');
 				};
 			},
 			onLoad: function() {
@@ -415,25 +418,6 @@ BookReader.prototype.buildFulltextDiv = function(jFulltextDiv) {
 // IIIF required
 **/
 
-// Extend buildToolbarElement: add ZoomPage button and remove zoom buttons when IIIF server tile source
-BookReader.prototype.buildToolbarElement = (function (super_) {
-    	return function () {
-        	var $el = super_.call(this);
-          	var readIcon = '';
-		if (this.imageServer == 'iiif') {
-		  	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection tc ph20'>"
-//		  		+ "<button class='BRtext zoomPage'><span class=\"hide-md\" style=\"font-weight: bolder;\">ZOOM</span></button>"
-		  		+ "<button class='BRtext zoomPage'><span style=\"font-weight: bolder;\">ZOOM</span></button>"
-		  		+ "</span>");
-			//hide zoom controls
-			$el.find('.BRtoolbarSectionZoom').remove();
-			//set div class to render osd
-			$('<div style="display: none;"></div>').append('<div class="BRfloat" id="BRviewpage"></div>').appendTo($('body'));
-		};
-        	return $el;
-    	};
-})(BookReader.prototype.buildToolbarElement);
-
 // Extend initToolbar: add ZoomPage button click code if IIIF server tile source
 BookReader.prototype.initToolbar = (function (super_) {
     	return function (mode, ui) {
@@ -444,14 +428,15 @@ BookReader.prototype.initToolbar = (function (super_) {
 				inline: true,
 				opacity: "0.5",
 				href: "#BRviewpage",
-				width: "80%",
-				height: "80%",
+				width: "90%",
+				height: "90%",
 				fastIframe: false,
+				reposition: false,
 				onOpen: function() {
 					if (1 == self.mode) {
-					      	$('#BRviewpage').html('<div class="textTop loader">LOADING...');
+					      	$('#BRviewpage').html('<div class="textTop loader"></div>');
 					} else if (2 == self.mode) {
-					      	$('#BRviewpage').html('<div class="viewpLeft loader">LOADING...</div><div class="viewpRight loader">LOADING...</div>');
+					      	$('#BRviewpage').html('<div class="viewpLeft loader"></div><div class="viewpRight loader"></div>');
 					};
 				},
 				onLoad: function() {
@@ -542,60 +527,6 @@ BookReader.prototype.buildViewpageDiv = function(jViewpageDiv) {
 };
 
 
-
-
-/**
-//§§ Fullscreen
-**/
-
-// Extend buildToolbarElement: add fullscreen button
-BookReader.prototype.buildToolbarElement = (function (super_) {
-    	return function () {
-        	var $el = super_.call(this);
-          	var readIcon = '';
-          	$el.find('.BRtoolbarRight').append("<span class='BRtoolbarSection BRtoolbarSectionFullscreen tc ph20 first'>"
-	  		+ "<button class='BRicon full js-tooltip'></button>"
-          		+ "</span>");
-        	return $el;
-    	};
-})(BookReader.prototype.buildToolbarElement);
-
-// Extend initToolbar: add fullscreen button click code
-BookReader.prototype.initToolbar = (function (super_) {
-    	return function (mode, ui) {
-        	super_.apply(this, arguments);
-		if (ui == 'embed') {
-            		return;
-        	}
-		var self = this;
-		this.refs.$BRtoolbar.find('.full').bind('click', function() {
-    	   		self.fullscreen = (self.fullscreen ? false : true);
-		    	if(self.fullscreen) {
-				$('body').addClass('BRfullscreenActive');
-				self.refs.$br.addClass('fullscreenActive');
-				self.refs.$br.find('#BRreturn').addClass('fullscreenActive');
-		  	}
-		    	else {
-				$('body').removeClass('BRfullscreenActive');
-				self.refs.$br.removeClass('fullscreenActive');
-				self.refs.$br.find('#BRreturn').removeClass('fullscreenActive');
-			}
-			self.resize();
-  		});
-   	};
-})(BookReader.prototype.initToolbar);
-
-// Go Fullscreen regardless of current state.
-BookReader.prototype.goFullScreen = function() {
-    	this.fullscreen = true;
-	this.refs.$br.addClass('fullscreenActive');
-	$('body').addClass('BRfullscreenActive');
-      	this.resize();
-}
-
-
-
-
 /**
 //§§ Chapters
 //
@@ -608,35 +539,30 @@ BookReader.prototype.getOpenLibraryRecord = function(callback) {
   	this.updateTOC(itoc);
 
 	//§ makeup tooltip position
-	$('div#BRnavline div.chapter').bt({
-		contentSelector: '$(this).find(".title")',
+	$('.BRnavline .BRchapter').bt({
+		contentSelector: '$(this).find("> div")',
 		trigger: 'hover',
 		closeWhenOthersOpen: true,
 		cssStyles: {
 		    	padding: '12px 14px',
 		    	backgroundColor: '#fff',
 		    	border: '4px solid rgb(216,216,216)',
-		    	fontSize: '13px',
 		    	color: 'rgb(52,52,52)',
 			//§
-			top: '-20px'
+			fontSize: '13px',
+			left: '160px'
 			//§
 		},
-		shrinkToFit: true,
-		width: '200px',
+		shrinkToFit: false,
+		width: '300px',
 		padding: 0,
 		spikeGirth: 0,
 		spikeLength: 0,
-		overlap: '0',
+		overlap: '0px',
 		overlay: false,
-		killTitle: true,
-		textzIndex: 9999,
-		boxzIndex: 9998,
-		wrapperzIndex: 9997,
+		killTitle: false,
 		offsetParent: null,
-		//§
-		positions: ['right'],
-		//§
+		positions: ['top'],
 		fill: 'white',
 		windowMargin: 10,
 		strokeWidth: 0,
@@ -645,4 +571,6 @@ BookReader.prototype.getOpenLibraryRecord = function(callback) {
 		centerPointY: 0,
 		shadow: false
 	});
+	//§ makeup chapter marker
+	$('.BRnavline .BRchapter').css("background-color", "black");
 };
