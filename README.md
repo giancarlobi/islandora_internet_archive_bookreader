@@ -45,6 +45,8 @@
  Step 9.4: Title on fullscreen, bars makeup
  
  Step 9.5: Add option to switch to fullscreen on open if URL query parameter fs=1
+ 
+ Step 10: switch to IABR version 4
 
 
 
