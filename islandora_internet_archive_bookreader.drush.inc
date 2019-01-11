@@ -8,12 +8,12 @@
 /**
  * The Internet Archive Bookreader plugin URI.
  */
-define('IABOOKREADER_DOWNLOAD_URI', 'https://github.com/Islandora/internet_archive_bookreader/archive/master.zip');
+define('IABOOKREADER_DOWNLOAD_URI', 'https://github.com/internetarchive/bookreader/archive/master.zip');
 
 /**
  * The original extracted directory frome the zip file.
  */
-define('IABOOKREADER_ORIGINAL_DIR', 'internet_archive_bookreader-master');
+define('IABOOKREADER_ORIGINAL_DIR', 'bookreader-master');
 
 /**
  * Implements hook_drush_command().
@@ -81,7 +81,7 @@ function drush_islandora_internet_archive_bookreader_plugin() {
     // Decompress the zip archive.
     drush_tarball_extract($filename);
 
-    // Change the directory name to "iabookreader" if needed.
+    // Change the directory name to "bookreader" if needed.
     if ($dirname != 'bookreader') {
       drush_move_dir($dirname, 'bookreader', TRUE);
       $dirname = 'bookreader';
