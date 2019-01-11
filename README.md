@@ -68,9 +68,8 @@ This module requires the following modules/libraries:
 * [Islandora Solr Search](https://github.com/Islandora/islandora_solr_search/) (Optional ??)
 * [Libraries API](https://www.drupal.org/project/libraries)
 * [Internet Archive BookReader](https://github.com/internetarchive/bookreader)
-* [??][Djatoka](http://sourceforge.net/apps/mediawiki/djatoka/index.php?title=Main_Page)
-* [??][Colorbox](https://www.drupal.org/project/colorbox)
 * [Islandora Solr Views](https://github.com/Islandora/islandora_solr_views) (Optional)
+* [Islandora OpenSeaDragon](https://github.com/Islandora/islandora_openseadragon) (Optional)
 * [Cantaloupe IIIF server](https://github.com/medusa-project/cantaloupe/releases) (Optional)
 
 
