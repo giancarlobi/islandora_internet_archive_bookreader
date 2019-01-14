@@ -81,10 +81,11 @@ Download/clone the [Internet Archive BookReader](https://github.com/internetarch
 
 Internet Archive BookReader [Developer documentation](https://openlibrary.org/dev/docs/bookreader)
 
-?????This module requires that you set up Djatoka, please follow the steps outlined at [here](https://wiki.duraspace.org/pages/viewpage.action?pageId=34658947).
-OR IIIF server
+?????This module requires that you set up Djatoka, please follow the steps outlined at [here](https://wiki.duraspace.org/pages/viewpage.action?pageId=34658947) OR IIIF server
 
 Note: If you use the Drush command, it is advisable to Move (not copy) the install script to your `.drush` folder and run it.
+
+ToDO from here********
 
 ## Configuration
 
