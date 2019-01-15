@@ -87,7 +87,7 @@ Note: If you use the Drush command, it is advisable to Move (not copy) the insta
 
 ## Configuration
 
-
+![Configuration](https://user-images.githubusercontent.com/4232178/51184852-cc86d580-18d5-11e9-9361-899d816f6847.png)
 
 
 ## ToDO from here********
