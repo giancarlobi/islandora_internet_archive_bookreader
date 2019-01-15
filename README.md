@@ -1,12 +1,9 @@
-# Islandora Internet Archive BookReader [![Build Status](https://travis-ci.org/Islandora/islandora_internet_archive_bookreader.png?branch=7.x)](https://travis-ci.org/Islandora/islandora_internet_archive_bookreader)
+# Islandora Internet Archive BookReader [![Build Status](https://travis-ci.org/giancarlobi/islandora_internet_archive_bookreader.png)](https://travis-ci.org/giancarlobi/islandora_internet_archive_bookreader)
 
 ## ==================================
 ## IAB v 4.1.0  | work in progress |
 ## ==================================
-
-
-## ==================================
-## README DRAFT
+## README
 
 ## Introduction
 
@@ -36,17 +33,23 @@ Download/clone the [Internet Archive BookReader](https://github.com/internetarch
 
 Internet Archive BookReader [Developer documentation](https://openlibrary.org/dev/docs/bookreader)
 
-?????This module requires that you set up Djatoka, please follow the steps outlined at [here](https://wiki.duraspace.org/pages/viewpage.action?pageId=34658947) OR IIIF server
+This module requires that you set up IIIF server (Cantaloupe) OR Djatoka, please follow the steps outlined at [here](https://wiki.duraspace.org/pages/viewpage.action?pageId=34658947).
 
 Note: If you use the Drush command, it is advisable to Move (not copy) the install script to your `.drush` folder and run it.
 
 ## Configuration
 
+IIIF Server
+
+
 ![Configuration](https://user-images.githubusercontent.com/4232178/51184852-cc86d580-18d5-11e9-9361-899d816f6847.png)
 
-OR
+
+OR Djatoka
+
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185417-55524100-18d7-11e9-8b8b-9b84251d2064.png)
+
 
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185061-74040800-18d6-11e9-8966-8154f5ca221f.png)
