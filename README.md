@@ -46,6 +46,7 @@ IIIF Server
 
 
 OR Djatoka
+Set the 'djatoka image compression level' and additional option involve behavior for using the JPG datastream as a backup in case Djatoka cannot return a JP2.
 
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185417-55524100-18d7-11e9-8b8b-9b84251d2064.png)
@@ -59,11 +60,7 @@ OR Djatoka
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185226-d52bdb80-18d6-11e9-88d2-f70cb898e4ab.png)
 
 
-
-
-
-
-
+## PR starting from IAB v2 (see https://github.com/DiegoPino/islandora_internet_archive_bookreader/tree/7.x-2dev)
 
  step 1: fullscreen, info tab, mobile
  
@@ -111,15 +108,6 @@ OR Djatoka
 
 
 ## ToDO from here********
-
-
-
-
-## Configuration OLD
-
-Set the 'djatoka image compression level', 'Solr field relating pages to book PIDs ', 'Overlay Opacity', a content type to be displayed in the IAV, and select the 'Default page view' in Administration » Islandora » Islandora Viewers » Internet Archive BookReader (/admin/islandora/islandora_viewers/internet_archive_bookreader). Additional options involve behavior for mobile users, and using the JPG datastream as a backup in case Djatoka cannot return a JP2.
-
-![Configuration](https://cloud.githubusercontent.com/assets/10052068/24043645/fce70382-0aed-11e7-9e70-11678aa7d1df.png)
 
 ## Documentation
 
