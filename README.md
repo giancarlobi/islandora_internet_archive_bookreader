@@ -4,51 +4,6 @@
 ## IAB v 4.1.0  | work in progress |
 ## ==================================
 
- step 1: fullscreen, info tab, mobile
- 
- step 2.0: search is working, we need more code make-up
- 
- step 2.1: less override code for search, popup for no result, ToDo: goToFirstResult and disablePopup as options in admin panel 
-
- step 3: fulltext
- 
- step 4.0: integration with openseadragon, Page view, first draft
- 
- step 4.1: Page view: viewers inline when 2-page, redraw Iabr after fullscreen OSD, some code cleanup
- 
- step 4.2: Page view: makeup css colorbox window
- 
- step 4.3: Page view: IIIF required, tilesource from IABR settings, some makeup
- 
- step 4.4: Page view: added logic to disable zoom buttons when active, some makeup
- 
- step 5.0: add chapters (TOC) from Views
- 
- Step 5.1: chapter tooltip makeup postition
- 
- step 6.0: SEARCH jump to the first result now works, results sorted on page number
- 
- step 6.1: SEARCH makeup tooltip position and text
- 
- Step 7.0: ZoomPage (aka Page view): using callback, lazyload, makeup
- 
- Step 8.0: Add admin settings for Search and Toc, makeup osd loading
- 
- Step 9.0: Restyling Fulltext colorbox and lazyloading
- 
- Step 9.1: Custom CSS optimized and moved style from js to css file
- 
- Step 9.2: Fulltext logic moved to CSS and class. Makeup mobile rendering.
- 
- Step 9.3: Navbar tooltip makeup
- 
- Step 9.4: Title on fullscreen, bars makeup
- 
- Step 9.5: Add option to switch to fullscreen on open if URL query parameter fs=1
- 
- Step 10: switch to IABR version 4
-
-
 
 ## ==================================
 ## README DRAFT
@@ -99,6 +54,57 @@ OR
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185159-aa418780-18d6-11e9-8186-ffd84d8650b7.png)
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185226-d52bdb80-18d6-11e9-88d2-f70cb898e4ab.png)
+
+
+
+
+
+
+
+
+ step 1: fullscreen, info tab, mobile
+ 
+ step 2.0: search is working, we need more code make-up
+ 
+ step 2.1: less override code for search, popup for no result, ToDo: goToFirstResult and disablePopup as options in admin panel 
+
+ step 3: fulltext
+ 
+ step 4.0: integration with openseadragon, Page view, first draft
+ 
+ step 4.1: Page view: viewers inline when 2-page, redraw Iabr after fullscreen OSD, some code cleanup
+ 
+ step 4.2: Page view: makeup css colorbox window
+ 
+ step 4.3: Page view: IIIF required, tilesource from IABR settings, some makeup
+ 
+ step 4.4: Page view: added logic to disable zoom buttons when active, some makeup
+ 
+ step 5.0: add chapters (TOC) from Views
+ 
+ Step 5.1: chapter tooltip makeup postition
+ 
+ step 6.0: SEARCH jump to the first result now works, results sorted on page number
+ 
+ step 6.1: SEARCH makeup tooltip position and text
+ 
+ Step 7.0: ZoomPage (aka Page view): using callback, lazyload, makeup
+ 
+ Step 8.0: Add admin settings for Search and Toc, makeup osd loading
+ 
+ Step 9.0: Restyling Fulltext colorbox and lazyloading
+ 
+ Step 9.1: Custom CSS optimized and moved style from js to css file
+ 
+ Step 9.2: Fulltext logic moved to CSS and class. Makeup mobile rendering.
+ 
+ Step 9.3: Navbar tooltip makeup
+ 
+ Step 9.4: Title on fullscreen, bars makeup
+ 
+ Step 9.5: Add option to switch to fullscreen on open if URL query parameter fs=1
+ 
+ Step 10: switch to IABR version 4
 
 
 ## ToDO from here********
