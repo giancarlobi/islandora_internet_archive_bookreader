@@ -75,7 +75,7 @@ This module requires the following modules/libraries:
 
 ## Installation
 
-Install as usual.
+Install as usual.... (see Drupal7 module install)
 
 Download/clone the [Internet Archive BookReader](https://github.com/internetarchive/bookreader) to `sites/all/libraries/bookreader`, or run `drush iabookreader-plugin`.
 
@@ -85,9 +85,17 @@ Internet Archive BookReader [Developer documentation](https://openlibrary.org/de
 
 Note: If you use the Drush command, it is advisable to Move (not copy) the install script to your `.drush` folder and run it.
 
+## Configuration
+
+
+
+
 ## ToDO from here********
 
-## Configuration
+
+
+
+## Configuration OLD
 
 Set the 'djatoka image compression level', 'Solr field relating pages to book PIDs ', 'Overlay Opacity', a content type to be displayed in the IAV, and select the 'Default page view' in Administration » Islandora » Islandora Viewers » Internet Archive BookReader (/admin/islandora/islandora_viewers/internet_archive_bookreader). Additional options involve behavior for mobile users, and using the JPG datastream as a backup in case Djatoka cannot return a JP2.
 
