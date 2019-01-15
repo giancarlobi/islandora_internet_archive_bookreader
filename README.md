@@ -89,6 +89,11 @@ Note: If you use the Drush command, it is advisable to Move (not copy) the insta
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51184852-cc86d580-18d5-11e9-9361-899d816f6847.png)
 
+OR
+
+![Configuration](https://user-images.githubusercontent.com/4232178/51185417-55524100-18d7-11e9-8b8b-9b84251d2064.png)
+
+
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185061-74040800-18d6-11e9-8966-8154f5ca221f.png)
 
 ![Configuration](https://user-images.githubusercontent.com/4232178/51185159-aa418780-18d6-11e9-8186-ffd84d8650b7.png)
