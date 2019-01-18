@@ -1,7 +1,7 @@
 # Islandora Internet Archive BookReader [![Build Status](https://travis-ci.org/giancarlobi/islandora_internet_archive_bookreader.png)](https://travis-ci.org/giancarlobi/islandora_internet_archive_bookreader)
 
 ## ==================================
-## IAB v 4.1.0  | work in progress |
+## IAB v 4.2.0  | work in progress |
 ## ==================================
 ## README
 
